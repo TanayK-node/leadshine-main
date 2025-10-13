@@ -1,0 +1,205 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Kids toy wholesaler design system - soft pastels and playful colors */
+
+@layer base {
+  :root {
+    /* Professional blue and gold palette */
+    --background: 210 15% 98%;
+    --foreground: 200 65% 15%;
+
+    /* Card colors with blue tints */
+    --card: 0 0% 100%;
+    --card-foreground: 200 65% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 65% 15%;
+
+    /* Primary brand - deep blue #0f5070 */
+    --primary: 200 65% 25%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 200 45% 45%;
+    --primary-glow: 200 55% 35%;
+
+    /* Secondary - warm gold #e8c283 */
+    --secondary: 45 65% 70%;
+    --secondary-foreground: 200 65% 15%;
+    --secondary-light: 45 55% 85%;
+
+    /* Accent - complementary gold tones */
+    --accent: 45 65% 70%;
+    --accent-foreground: 200 65% 15%;
+    --accent-light: 45 55% 85%;
+
+    /* Additional themed colors */
+    --toy-pink: 45 45% 75%;
+    --toy-blue: 200 45% 65%;
+    --toy-yellow: 45 75% 75%;
+
+    /* Muted tones with blue undertones */
+    --muted: 210 15% 92%;
+    --muted-foreground: 200 25% 45%;
+
+    --destructive: 0 65% 70%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 20% 88%;
+    --input: 210 20% 88%;
+    --ring: 200 65% 25%;
+
+    /* Professional gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary-light)), hsl(var(--secondary-light)), hsl(var(--accent-light)));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted)));
+
+    /* Elegant shadows */
+    --shadow-soft: 0 8px 25px -5px hsl(var(--primary) / 0.15);
+    --shadow-card: 0 4px 15px -3px hsl(var(--primary) / 0.12);
+    --shadow-glow: 0 0 30px hsl(var(--secondary) / 0.25);
+
+    /* Playful border radius */
+    --radius: 1rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark mode with blue and gold theme */
+    --background: 200 25% 8%;
+    --foreground: 45 30% 90%;
+
+    --card: 200 20% 12%;
+    --card-foreground: 45 30% 90%;
+
+    --popover: 200 20% 12%;
+    --popover-foreground: 45 30% 90%;
+
+    --primary: 200 65% 35%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 200 45% 55%;
+    --primary-glow: 200 55% 45%;
+
+    --secondary: 45 65% 60%;
+    --secondary-foreground: 200 25% 8%;
+    --secondary-light: 45 45% 75%;
+
+    --accent: 45 65% 60%;
+    --accent-foreground: 200 25% 8%;
+    --accent-light: 45 45% 75%;
+
+    --toy-pink: 45 35% 65%;
+    --toy-blue: 200 50% 60%;
+    --toy-yellow: 45 65% 65%;
+
+    --muted: 200 15% 18%;
+    --muted-foreground: 200 15% 65%;
+
+    --destructive: 0 65% 60%;
+    --destructive-foreground: 45 30% 90%;
+
+    --border: 200 20% 25%;
+    --input: 200 20% 25%;
+    --ring: 200 65% 35%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/50 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/70;
+  }
+}
+
+@layer utilities {
+  /* Gradient backgrounds */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  /* Soft shadows */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  /* Toy color utilities */
+  .bg-toy-pink {
+    background-color: hsl(var(--toy-pink));
+  }
+  
+  .bg-toy-blue {
+    background-color: hsl(var(--toy-blue));
+  }
+  
+  .bg-toy-yellow {
+    background-color: hsl(var(--toy-yellow));
+  }
+  
+  /* Hover animations */
+  .hover-lift {
+    @apply transition-all duration-300 hover:transform hover:scale-105 hover:shadow-glow;
+  }
+  
+  .hover-bounce {
+    @apply transition-transform duration-200 hover:transform hover:-translate-y-1;
+  }
+}
