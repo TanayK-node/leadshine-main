@@ -186,7 +186,6 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
         "Sku Width": formData["Sku Width"] ? parseFloat(formData["Sku Width"]) : null,
         "Sku Height": formData["Sku Height"] ? parseFloat(formData["Sku Height"]) : null,
         "Unit of measure of SKU length Width and Height": formData["Unit of measure of SKU length Width and Height"],
-        classification_id: null,
       };
 
       // Validate with zod

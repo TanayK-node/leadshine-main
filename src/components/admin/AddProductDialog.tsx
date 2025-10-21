@@ -25,7 +25,6 @@ const productSchema = z.object({
   "Sku Width": z.number().optional(),
   "Sku Height": z.number().optional(),
   "Unit of measure of SKU length Width and Height": z.string().optional(),
-  classification_id: z.string().optional(),
 });
 
 interface Brand {
@@ -162,7 +161,6 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
         "Sku Width": formData["Sku Width"] ? parseFloat(formData["Sku Width"]) : null,
         "Sku Height": formData["Sku Height"] ? parseFloat(formData["Sku Height"]) : null,
         "Unit of measure of SKU length Width and Height": formData["Unit of measure of SKU length Width and Height"],
-        classification_id: null,
       };
 
       // Validate with zod
