@@ -48,9 +48,8 @@ const NewArrivals = () => {
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('classification_id', '57c79eaa-06a9-4aaf-9c14-b050aa5cc101')
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(8);
 
       if (error) throw error;
       setProducts(data || []);

@@ -166,6 +166,42 @@ export type Database = {
         }
         Relationships: []
       }
+      product_classifications: {
+        Row: {
+          classification_id: string
+          created_at: string | null
+          id: string
+          product_id: string
+        }
+        Insert: {
+          classification_id: string
+          created_at?: string | null
+          id?: string
+          product_id: string
+        }
+        Update: {
+          classification_id?: string
+          created_at?: string | null
+          id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_classifications_classification_id_fkey"
+            columns: ["classification_id"]
+            isOneToOne: false
+            referencedRelation: "classifications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_classifications_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           age_range: string | null

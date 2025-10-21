@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,7 +60,7 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
   // Selected values
   const [selectedBrandId, setSelectedBrandId] = useState<string>("");
   const [selectedSubBrandId, setSelectedSubBrandId] = useState<string>("");
-  const [selectedClassificationId, setSelectedClassificationId] = useState<string>(product.classification_id || "");
+  const [selectedClassificationIds, setSelectedClassificationIds] = useState<string[]>([]);
   
   // Form data
   const [formData, setFormData] = useState({
@@ -123,6 +124,15 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
       
       if (classificationsError) throw classificationsError;
       setClassifications(classificationsData || []);
+
+      // Fetch current product classifications
+      const { data: productClassifications, error: productClassError } = await supabase
+        .from('product_classifications')
+        .select('classification_id')
+        .eq('product_id', product.id);
+
+      if (productClassError) throw productClassError;
+      setSelectedClassificationIds(productClassifications?.map(pc => pc.classification_id) || []);
     } catch (error) {
       console.error('Error fetching dropdown data:', error);
       toast({
@@ -176,7 +186,7 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
         "Sku Width": formData["Sku Width"] ? parseFloat(formData["Sku Width"]) : null,
         "Sku Height": formData["Sku Height"] ? parseFloat(formData["Sku Height"]) : null,
         "Unit of measure of SKU length Width and Height": formData["Unit of measure of SKU length Width and Height"],
-        classification_id: selectedClassificationId || null,
+        classification_id: null,
       };
 
       // Validate with zod
@@ -188,6 +198,27 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
         .eq('id', product.id);
 
       if (error) throw error;
+
+      // Update classifications - delete existing and insert new ones
+      const { error: deleteError } = await supabase
+        .from('product_classifications')
+        .delete()
+        .eq('product_id', product.id);
+
+      if (deleteError) throw deleteError;
+
+      if (selectedClassificationIds.length > 0) {
+        const classificationInserts = selectedClassificationIds.map(classId => ({
+          product_id: product.id,
+          classification_id: classId,
+        }));
+
+        const { error: classError } = await supabase
+          .from('product_classifications')
+          .insert(classificationInserts);
+
+        if (classError) throw classError;
+      }
 
       toast({
         title: "Success",
@@ -266,21 +297,36 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
             </div>
           </div>
 
-          {/* Classification */}
+          {/* Classifications */}
           <div className="space-y-2">
-            <Label htmlFor="classification">Classification</Label>
-            <Select value={selectedClassificationId} onValueChange={setSelectedClassificationId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select classification" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover z-50">
-                {classifications.map((classification) => (
-                  <SelectItem key={classification.id} value={classification.id}>
+            <Label>Classifications</Label>
+            <div className="border rounded-md p-4 space-y-3 max-h-48 overflow-y-auto">
+              {classifications
+                .filter(c => c.name !== "New Arrivals")
+                .map((classification) => (
+                <div key={classification.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={classification.id}
+                    checked={selectedClassificationIds.includes(classification.id)}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setSelectedClassificationIds([...selectedClassificationIds, classification.id]);
+                      } else {
+                        setSelectedClassificationIds(
+                          selectedClassificationIds.filter((id) => id !== classification.id)
+                        );
+                      }
+                    }}
+                  />
+                  <Label
+                    htmlFor={classification.id}
+                    className="text-sm font-normal cursor-pointer"
+                  >
                     {classification.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Product Name */}
