@@ -45,10 +45,26 @@ const KidsAccessories = () => {
 
   const fetchProducts = async () => {
     try {
+      // First get product IDs from junction table
+      const { data: classificationData, error: classError } = await supabase
+        .from('product_classifications')
+        .select('product_id')
+        .eq('classification_id', '2e18dd71-bf52-4260-ac4e-3a377433705b');
+
+      if (classError) throw classError;
+      
+      if (!classificationData || classificationData.length === 0) {
+        setProducts([]);
+        return;
+      }
+
+      const productIds = classificationData.map(item => item.product_id);
+
+      // Then fetch the products
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('classification_id', '2e18dd71-bf52-4260-ac4e-3a377433705b');
+        .in('id', productIds);
 
       if (error) throw error;
       setProducts(data || []);

@@ -45,10 +45,26 @@ const ArtAndCrafts = () => {
 
   const fetchProducts = async () => {
     try {
+      // First get product IDs from junction table
+      const { data: classificationData, error: classError } = await supabase
+        .from('product_classifications')
+        .select('product_id')
+        .eq('classification_id', '29cfcb1e-0441-4451-88b0-c23d8d4e9eff');
+
+      if (classError) throw classError;
+      
+      if (!classificationData || classificationData.length === 0) {
+        setProducts([]);
+        return;
+      }
+
+      const productIds = classificationData.map(item => item.product_id);
+
+      // Then fetch the products
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('classification_id', '29cfcb1e-0441-4451-88b0-c23d8d4e9eff');
+        .in('id', productIds);
 
       if (error) throw error;
       setProducts(data || []);
