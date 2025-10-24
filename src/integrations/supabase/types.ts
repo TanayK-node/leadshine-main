@@ -241,6 +241,7 @@ export type Database = {
           "Brand Desc": string | null
           classification_id: string | null
           created_at: string | null
+          description: string | null
           "Elec/ Non Elec": string | null
           "Funskool Code": string | null
           id: string
@@ -262,6 +263,7 @@ export type Database = {
           "Brand Desc"?: string | null
           classification_id?: string | null
           created_at?: string | null
+          description?: string | null
           "Elec/ Non Elec"?: string | null
           "Funskool Code"?: string | null
           id?: string
@@ -283,6 +285,7 @@ export type Database = {
           "Brand Desc"?: string | null
           classification_id?: string | null
           created_at?: string | null
+          description?: string | null
           "Elec/ Non Elec"?: string | null
           "Funskool Code"?: string | null
           id?: string
