@@ -43,7 +43,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           id,
           product_id,
           quantity,
-          products (*)
+          products (
+            *,
+            product_images(image_url)
+          )
         `)
         .eq('user_id', session.user.id);
 

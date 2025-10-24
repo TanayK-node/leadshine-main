@@ -89,12 +89,18 @@ const Cart = () => {
               return (
                 <Card key={item.id}>
                   <CardContent className="p-6">
-                    <div className="flex items-center gap-4">
-                      <img
-                        src="/placeholder.svg"
-                        alt={`${product["Brand Desc"]} ${product.SubBrand}`}
-                        className="w-20 h-20 object-cover rounded-lg"
-                      />
+                  <div className="flex items-center gap-4">
+                      {product.product_images && product.product_images.length > 0 ? (
+                        <img
+                          src={product.product_images[0].image_url}
+                          alt={product["Material Desc"] || "Product"}
+                          className="w-20 h-20 object-cover rounded-lg"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 bg-muted flex items-center justify-center rounded-lg">
+                          <span className="text-xs text-muted-foreground">No Image</span>
+                        </div>
+                      )}
                       
                       <div className="flex-1">
                         <h3 className="font-semibold text-foreground">
