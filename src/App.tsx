@@ -15,6 +15,8 @@ import KidsAccessories from "./pages/KidsAccessories";
 import ArtAndCrafts from "./pages/ArtAndCrafts";
 import Profile from "./pages/Profile";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Orders from "./pages/Orders";
 import ProductDetail from "./pages/ProductDetail";
 import ShopAllProducts from "./pages/ShopAllProducts";
 import Auth from "./pages/Auth";
@@ -42,6 +44,8 @@ const App = () => (
           <Route path="/art-and-crafts" element={<ArtAndCrafts />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/orders" element={<Orders />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -17,6 +17,7 @@ interface CartContextType {
   updateQuantity: (itemId: string, quantity: number) => Promise<void>;
   removeFromCart: (itemId: string) => Promise<void>;
   refreshCart: () => Promise<void>;
+  clearCart: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -167,6 +168,31 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     await fetchCart();
   };
 
+  const clearCart = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        return;
+      }
+
+      const { error } = await supabase
+        .from('cart_items')
+        .delete()
+        .eq('user_id', session.user.id);
+
+      if (error) throw error;
+      await fetchCart();
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      toast({
+        title: "Error",
+        description: "Failed to clear cart",
+        variant: "destructive",
+      });
+    }
+  };
+
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
@@ -179,6 +205,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         updateQuantity,
         removeFromCart,
         refreshCart,
+        clearCart,
       }}
     >
       {children}

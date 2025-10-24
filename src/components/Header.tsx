@@ -86,6 +86,14 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => navigate('/orders')}
+                  className="hidden md:flex"
+                >
+                  Orders
+                </Button>
                 <Button variant="ghost" size="icon" onClick={() => navigate('/profile')}>
                   <User className="h-5 w-5" />
                 </Button>

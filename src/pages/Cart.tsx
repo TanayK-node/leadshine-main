@@ -179,7 +179,7 @@ const Cart = () => {
 
                 <Separator />
 
-                <Button className="w-full" size="lg">
+                <Button className="w-full" size="lg" onClick={() => navigate('/checkout')}>
                   Proceed to Checkout
                 </Button>
 
