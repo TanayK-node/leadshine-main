@@ -34,6 +34,9 @@ export const OrderManagement = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   useEffect(() => {
     fetchOrders();
@@ -96,10 +99,18 @@ export const OrderManagement = () => {
     }
   };
 
-  const filteredOrders = orders.filter(order =>
-    order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.status.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === "all" || order.status === statusFilter;
+    
+    const orderDate = new Date(order.created_at);
+    const matchesDateFrom = !dateFrom || orderDate >= new Date(dateFrom);
+    const matchesDateTo = !dateTo || orderDate <= new Date(dateTo + "T23:59:59");
+    
+    return matchesSearch && matchesStatus && matchesDateFrom && matchesDateTo;
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -151,7 +162,7 @@ export const OrderManagement = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="mb-4">
+        <div className="mb-4 space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
@@ -160,6 +171,43 @@ export const OrderManagement = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Status</label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Statuses" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover">
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="processing">Processing</SelectItem>
+                  <SelectItem value="shipped">Shipped</SelectItem>
+                  <SelectItem value="delivered">Delivered</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">From Date</label>
+              <Input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">To Date</label>
+              <Input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+              />
+            </div>
           </div>
         </div>
 

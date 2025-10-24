@@ -19,6 +19,7 @@ export const InventoryManagement = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [brandFilter, setBrandFilter] = useState("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { toast } = useToast();
 
@@ -165,12 +166,19 @@ export const InventoryManagement = () => {
     }
   };
 
-  const filteredProducts = products.filter(product =>
-    product["Brand Desc"]?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.SubBrand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product["Funskool Code"]?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product["Material Desc"]?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product["Brand Desc"]?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.SubBrand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product["Funskool Code"]?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product["Material Desc"]?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesBrand = brandFilter === "all" || product["Brand Desc"] === brandFilter;
+    
+    return matchesSearch && matchesBrand;
+  });
+
+  const uniqueBrands = Array.from(new Set(products.map(p => p["Brand Desc"]).filter(Boolean)));
+
 
   const getStockStatus = (quantity: number | null) => {
     if (!quantity || quantity === 0) return { label: "Out of Stock", color: "bg-red-100 text-red-800 border-red-200" };
@@ -202,7 +210,7 @@ export const InventoryManagement = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="mb-4">
+        <div className="mb-4 space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
@@ -211,6 +219,24 @@ export const InventoryManagement = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Filter by Brand</label>
+              <select
+                value={brandFilter}
+                onChange={(e) => setBrandFilter(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="all">All Brands</option>
+                {uniqueBrands.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
         
