@@ -243,9 +243,17 @@ const ShopAllProducts = () => {
                   <>
                     <div className="relative overflow-hidden rounded-t-lg">
                   <Link to={`/product/${product.id}`}>
-                    <div className="w-full h-48 bg-muted flex items-center justify-center group-hover:scale-105 transition-transform duration-300 cursor-pointer">
-                      <span className="text-muted-foreground">No Image</span>
-                    </div>
+                    {product.image_url ? (
+                      <img 
+                        src={product.image_url} 
+                        alt={product["Material Desc"] || "Product"}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+                      />
+                    ) : (
+                      <div className="w-full h-48 bg-muted flex items-center justify-center group-hover:scale-105 transition-transform duration-300 cursor-pointer">
+                        <span className="text-muted-foreground">No Image</span>
+                      </div>
+                    )}
                   </Link>
                   <Badge className="absolute top-2 right-2 bg-accent">
                     {product["Elec/ Non Elec"]}

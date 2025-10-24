@@ -78,6 +78,21 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
     "Unit of measure of SKU length Width and Height": product["Unit of measure of SKU length Width and Height"] || "cm",
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(product.image_url || null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   useEffect(() => {
     if (open) {
       fetchDropdownData();
@@ -191,9 +206,29 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
       // Validate with zod
       const validated = productSchema.parse(productData);
 
+      // Upload image if a new one is provided
+      let imageUrl = product.image_url;
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('product-images')
+          .upload(filePath, imageFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(filePath);
+
+        imageUrl = publicUrl;
+      }
+
       const { error } = await supabase
         .from('products')
-        .update(validated)
+        .update({ ...validated, image_url: imageUrl })
         .eq('id', product.id);
 
       if (error) throw error;
@@ -326,6 +361,22 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Product Image */}
+          <div className="space-y-2">
+            <Label htmlFor="image">Product Image</Label>
+            <Input
+              id="image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            {imagePreview && (
+              <div className="mt-2">
+                <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover rounded" />
+              </div>
+            )}
           </div>
 
           {/* Product Name */}

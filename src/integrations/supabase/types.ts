@@ -212,6 +212,7 @@ export type Database = {
           "Elec/ Non Elec": string | null
           "Funskool Code": string | null
           id: string
+          image_url: string | null
           "Material Desc": string | null
           "MRP (INR)": number | null
           QTY: number | null
@@ -232,6 +233,7 @@ export type Database = {
           "Elec/ Non Elec"?: string | null
           "Funskool Code"?: string | null
           id?: string
+          image_url?: string | null
           "Material Desc"?: string | null
           "MRP (INR)"?: number | null
           QTY?: number | null
@@ -252,6 +254,7 @@ export type Database = {
           "Elec/ Non Elec"?: string | null
           "Funskool Code"?: string | null
           id?: string
+          image_url?: string | null
           "Material Desc"?: string | null
           "MRP (INR)"?: number | null
           QTY?: number | null

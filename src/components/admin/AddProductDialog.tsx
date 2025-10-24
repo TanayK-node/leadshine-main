@@ -74,6 +74,21 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
     "Unit of measure of SKU length Width and Height": "cm",
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   useEffect(() => {
     if (open) {
       fetchDropdownData();
@@ -166,9 +181,29 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
       // Validate with zod
       const validated = productSchema.parse(productData);
 
+      // Upload image if provided
+      let imageUrl = null;
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('product-images')
+          .upload(filePath, imageFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(filePath);
+
+        imageUrl = publicUrl;
+      }
+
       const { data: newProduct, error } = await supabase
         .from('products')
-        .insert([validated])
+        .insert([{ ...validated, image_url: imageUrl }])
         .select()
         .single();
 
@@ -211,6 +246,8 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
       setSelectedBrandId("");
       setSelectedSubBrandId("");
       setSelectedClassificationIds([]);
+      setImageFile(null);
+      setImagePreview(null);
       setOpen(false);
       
       if (onProductAdded) {
@@ -314,6 +351,22 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Product Image */}
+          <div className="space-y-2">
+            <Label htmlFor="image">Product Image</Label>
+            <Input
+              id="image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            {imagePreview && (
+              <div className="mt-2">
+                <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover rounded" />
+              </div>
+            )}
           </div>
 
           {/* Product Name */}

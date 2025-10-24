@@ -143,8 +143,16 @@ const ProductDetail = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           {/* Product Image */}
           <div className="space-y-4">
-            <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-              <Package className="h-24 w-24 text-muted-foreground" />
+            <div className="aspect-square bg-muted rounded-lg overflow-hidden flex items-center justify-center">
+              {product.image_url ? (
+                <img 
+                  src={product.image_url} 
+                  alt={product["Material Desc"] || "Product"} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <Package className="h-24 w-24 text-muted-foreground" />
+              )}
             </div>
           </div>
 

@@ -73,8 +73,8 @@ const FeaturedProducts = () => {
                 <div className="relative">
                   <Link to={`/product/${product.id}`}>
                     <img
-                      src="/placeholder.svg"
-                      alt={product["Brand Desc"] || "Product"}
+                      src={product.image_url || "/placeholder.svg"}
+                      alt={product["Material Desc"] || product["Brand Desc"] || "Product"}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </Link>
