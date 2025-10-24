@@ -47,7 +47,10 @@ const NewArrivals = () => {
     try {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          product_images(image_url)
+        `)
         .order('created_at', { ascending: false })
         .limit(8);
 
@@ -109,11 +112,17 @@ const NewArrivals = () => {
                 <CardContent className="p-4">
                   <div className="relative mb-4 overflow-hidden rounded-lg bg-muted aspect-square">
                     <Link to={`/product/${product.id}`}>
-                      <img
-                        src="/placeholder.svg"
-                        alt={product["Brand Desc"] || "Product"}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
+                      {product.product_images && product.product_images.length > 0 ? (
+                        <img
+                          src={product.product_images[0].image_url}
+                          alt={product["Material Desc"] || "Product"}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-muted-foreground">No Image</span>
+                        </div>
+                      )}
                     </Link>
                     <Button
                       size="icon"

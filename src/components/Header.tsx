@@ -29,14 +29,20 @@ const Header = () => {
   }, []);
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
+    try {
+      // Clear local user state first
+      setUser(null);
+      
+      // Then attempt to sign out from Supabase
+      await supabase.auth.signOut();
+      
       toast({
-        title: "Error",
-        description: "Failed to log out. Please try again.",
-        variant: "destructive",
+        title: "Logged out",
+        description: "You have been successfully logged out.",
       });
-    } else {
+      navigate("/");
+    } catch (error) {
+      console.error('Logout error:', error);
       toast({
         title: "Logged out",
         description: "You have been successfully logged out.",

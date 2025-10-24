@@ -63,7 +63,10 @@ const ArtAndCrafts = () => {
       // Then fetch the products
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          product_images(image_url)
+        `)
         .in('id', productIds);
 
       if (error) throw error;
@@ -127,11 +130,17 @@ const ArtAndCrafts = () => {
                 <CardContent className="p-0">
                   <div className="relative overflow-hidden rounded-t-lg">
                     <Link to={`/product/${product.id}`}>
-                      <img
-                        src="/placeholder.svg"
-                        alt={`${product["Brand Desc"]} ${product.SubBrand}`}
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
-                      />
+                      {product.product_images && product.product_images.length > 0 ? (
+                        <img
+                          src={product.product_images[0].image_url}
+                          alt={product["Material Desc"] || "Product"}
+                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+                        />
+                      ) : (
+                        <div className="w-full h-48 bg-muted flex items-center justify-center">
+                          <span className="text-muted-foreground">No Image</span>
+                        </div>
+                      )}
                     </Link>
                     <Badge className="absolute top-2 right-2 bg-accent">ART</Badge>
                   </div>
