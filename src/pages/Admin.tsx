@@ -11,6 +11,12 @@ import { toast } from "sonner";
 const Admin = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    totalProducts: 0,
+    totalRevenue: 0,
+    totalCustomers: 0,
+  });
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -22,11 +28,58 @@ const Admin = () => {
         return;
       }
       
+      await fetchStats();
       setIsLoading(false);
     };
 
     checkAuth();
   }, [navigate]);
+
+  const fetchStats = async () => {
+    try {
+      // Fetch total orders
+      const { count: ordersCount, error: ordersError } = await supabase
+        .from('orders')
+        .select('*', { count: 'exact', head: true });
+
+      if (ordersError) throw ordersError;
+
+      // Fetch total products
+      const { count: productsCount, error: productsError } = await supabase
+        .from('products')
+        .select('*', { count: 'exact', head: true });
+
+      if (productsError) throw productsError;
+
+      // Fetch total revenue
+      const { data: ordersData, error: revenueError } = await supabase
+        .from('orders')
+        .select('total_amount');
+
+      if (revenueError) throw revenueError;
+
+      const totalRevenue = ordersData?.reduce((sum, order) => sum + Number(order.total_amount || 0), 0) || 0;
+
+      // Fetch unique customers count
+      const { data: customersData, error: customersError } = await supabase
+        .from('orders')
+        .select('user_id');
+
+      if (customersError) throw customersError;
+
+      const uniqueCustomers = new Set(customersData?.map(order => order.user_id)).size;
+
+      setStats({
+        totalOrders: ordersCount || 0,
+        totalProducts: productsCount || 0,
+        totalRevenue: totalRevenue,
+        totalCustomers: uniqueCustomers,
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      toast.error("Failed to load dashboard statistics");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -52,8 +105,8 @@ const Admin = () => {
               <ShoppingCart className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">24</div>
-              <p className="text-xs text-muted-foreground">+2 from yesterday</p>
+              <div className="text-2xl font-bold text-primary">{stats.totalOrders}</div>
+              <p className="text-xs text-muted-foreground">Total orders placed</p>
             </CardContent>
           </Card>
           
@@ -63,8 +116,8 @@ const Admin = () => {
               <Package className="h-4 w-4 text-secondary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-secondary">156</div>
-              <p className="text-xs text-muted-foreground">+5 new products</p>
+              <div className="text-2xl font-bold text-secondary">{stats.totalProducts}</div>
+              <p className="text-xs text-muted-foreground">Available in inventory</p>
             </CardContent>
           </Card>
           
@@ -74,8 +127,8 @@ const Admin = () => {
               <TrendingUp className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-accent">₹45,231</div>
-              <p className="text-xs text-muted-foreground">+12% from last month</p>
+              <div className="text-2xl font-bold text-accent">₹{stats.totalRevenue.toFixed(2)}</div>
+              <p className="text-xs text-muted-foreground">Total revenue from orders</p>
             </CardContent>
           </Card>
           
@@ -85,8 +138,8 @@ const Admin = () => {
               <Users className="h-4 w-4 text-foreground/70" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">89</div>
-              <p className="text-xs text-muted-foreground">+7 new customers</p>
+              <div className="text-2xl font-bold">{stats.totalCustomers}</div>
+              <p className="text-xs text-muted-foreground">Unique customers</p>
             </CardContent>
           </Card>
         </div>
