@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Search, Package } from "lucide-react";
+import { Plus, Edit, Search, Package, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Tables } from "@/integrations/supabase/types";
@@ -107,6 +107,64 @@ export const InventoryManagement = () => {
     }
   };
 
+  const handleDeleteProduct = async (productId: string) => {
+    if (!confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      // Delete product images from storage and database
+      const { data: images } = await supabase
+        .from('product_images')
+        .select('image_url')
+        .eq('product_id', productId);
+
+      if (images) {
+        for (const image of images) {
+          const fileName = image.image_url.split('/').pop();
+          if (fileName) {
+            await supabase.storage
+              .from('product-images')
+              .remove([`${productId}/${fileName}`]);
+          }
+        }
+      }
+
+      // Delete product images records
+      await supabase
+        .from('product_images')
+        .delete()
+        .eq('product_id', productId);
+
+      // Delete product classifications
+      await supabase
+        .from('product_classifications')
+        .delete()
+        .eq('product_id', productId);
+
+      // Delete the product
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', productId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Product deleted successfully",
+      });
+
+      fetchProducts();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete product",
+        variant: "destructive",
+      });
+    }
+  };
+
   const filteredProducts = products.filter(product =>
     product["Brand Desc"]?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.SubBrand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -196,7 +254,17 @@ export const InventoryManagement = () => {
                     </TableCell>
                     <TableCell>₹{product["MRP (INR)"]?.toLocaleString()}</TableCell>
                     <TableCell>
-                      <EditProductDialog product={product} onProductUpdated={fetchProducts} />
+                      <div className="flex items-center gap-2">
+                        <EditProductDialog product={product} onProductUpdated={fetchProducts} />
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleDeleteProduct(product.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );

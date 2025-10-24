@@ -3,6 +3,7 @@ import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -13,9 +14,9 @@ import { z } from "zod";
 const productSchema = z.object({
   "Brand Desc": z.string().min(1, "Brand is required"),
   SubBrand: z.string().optional(),
-  "Super Category Description": z.string().min(1, "Category is required"),
+  "Super Category Description": z.string().optional(),
   "Material Desc": z.string().min(1, "Product name is required"),
-  "Funskool Code": z.string().min(1, "SKU Code is required"),
+  "Funskool Code": z.string().optional(),
   "Barcode (UPC/EAN)": z.string().optional(),
   "MRP (INR)": z.number().min(0, "Price must be positive"),
   QTY: z.number().int().min(0, "Quantity must be non-negative"),
@@ -25,6 +26,7 @@ const productSchema = z.object({
   "Sku Width": z.number().optional(),
   "Sku Height": z.number().optional(),
   "Unit of measure of SKU length Width and Height": z.string().optional(),
+  description: z.string().optional(),
 });
 
 interface Brand {
@@ -72,6 +74,7 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
     "Sku Width": "",
     "Sku Height": "",
     "Unit of measure of SKU length Width and Height": "cm",
+    description: "",
   });
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -177,9 +180,9 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
       const productData = {
         "Brand Desc": selectedBrand.name,
         SubBrand: selectedSubBrand?.name || "",
-        "Super Category Description": formData["Super Category Description"],
+        "Super Category Description": formData["Super Category Description"] || "",
         "Material Desc": formData["Material Desc"],
-        "Funskool Code": formData["Funskool Code"],
+        "Funskool Code": formData["Funskool Code"] || "",
         "Barcode (UPC/EAN)": formData["Barcode (UPC/EAN)"],
         "MRP (INR)": parseFloat(formData["MRP (INR)"]) || 0,
         QTY: parseInt(formData.QTY) || 0,
@@ -189,6 +192,7 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
         "Sku Width": formData["Sku Width"] ? parseFloat(formData["Sku Width"]) : null,
         "Sku Height": formData["Sku Height"] ? parseFloat(formData["Sku Height"]) : null,
         "Unit of measure of SKU length Width and Height": formData["Unit of measure of SKU length Width and Height"],
+        description: formData.description || "",
       };
 
       // Validate with zod
@@ -267,6 +271,7 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
         "Sku Width": "",
         "Sku Height": "",
         "Unit of measure of SKU length Width and Height": "cm",
+        description: "",
       });
       setSelectedBrandId("");
       setSelectedSubBrandId("");
@@ -422,28 +427,38 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
             />
           </div>
 
+          {/* Product Description */}
+          <div className="space-y-2">
+            <Label htmlFor="description">Product Description (Optional)</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Enter product description..."
+              rows={4}
+            />
+          </div>
+
           {/* Category */}
           <div className="space-y-2">
-            <Label htmlFor="category">Category *</Label>
+            <Label htmlFor="category">Category</Label>
             <Input
               id="category"
               value={formData["Super Category Description"]}
               onChange={(e) => setFormData({ ...formData, "Super Category Description": e.target.value })}
               placeholder="e.g., Building Blocks"
-              required
             />
           </div>
 
           {/* SKU and Barcode */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="sku">SKU Code *</Label>
+              <Label htmlFor="sku">SKU Code</Label>
               <Input
                 id="sku"
                 value={formData["Funskool Code"]}
                 onChange={(e) => setFormData({ ...formData, "Funskool Code": e.target.value })}
                 placeholder="e.g., FS001"
-                required
               />
             </div>
 
