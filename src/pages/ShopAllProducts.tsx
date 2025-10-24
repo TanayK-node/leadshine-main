@@ -13,7 +13,9 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import type { Tables } from "@/integrations/supabase/types";
 
-type Product = Tables<"products">;
+type Product = Tables<"products"> & {
+  product_images?: Array<{ image_url: string }>;
+};
 
 const ShopAllProducts = () => {
   const navigate = useNavigate();
@@ -54,7 +56,10 @@ const ShopAllProducts = () => {
       try {
         const { data, error } = await supabase
           .from('products')
-          .select('*')
+          .select(`
+            *,
+            product_images(image_url)
+          `)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -243,9 +248,9 @@ const ShopAllProducts = () => {
                   <>
                     <div className="relative overflow-hidden rounded-t-lg">
                   <Link to={`/product/${product.id}`}>
-                    {product.image_url ? (
+                    {product.product_images && product.product_images.length > 0 ? (
                       <img 
-                        src={product.image_url} 
+                        src={product.product_images[0].image_url} 
                         alt={product["Material Desc"] || "Product"}
                         className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
                       />
@@ -308,9 +313,17 @@ const ShopAllProducts = () => {
                 ) : (
                   <div className="flex items-center gap-4 p-4">
                     <Link to={`/product/${product.id}`}>
-                      <div className="w-24 h-24 bg-muted flex items-center justify-center rounded cursor-pointer">
-                        <span className="text-xs text-muted-foreground">No Image</span>
-                      </div>
+                      {product.product_images && product.product_images.length > 0 ? (
+                        <img 
+                          src={product.product_images[0].image_url} 
+                          alt={product["Material Desc"] || "Product"}
+                          className="w-24 h-24 object-cover rounded cursor-pointer"
+                        />
+                      ) : (
+                        <div className="w-24 h-24 bg-muted flex items-center justify-center rounded cursor-pointer">
+                          <span className="text-xs text-muted-foreground">No Image</span>
+                        </div>
+                      )}
                     </Link>
                     
                     <div className="flex-1">

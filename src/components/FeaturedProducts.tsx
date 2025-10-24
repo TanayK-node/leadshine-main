@@ -20,7 +20,10 @@ const FeaturedProducts = () => {
     try {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          product_images(image_url)
+        `)
         .limit(4);
 
       if (error) throw error;
@@ -72,11 +75,17 @@ const FeaturedProducts = () => {
               <CardContent className="p-0">
                 <div className="relative">
                   <Link to={`/product/${product.id}`}>
-                    <img
-                      src={product.image_url || "/placeholder.svg"}
-                      alt={product["Material Desc"] || product["Brand Desc"] || "Product"}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                    {product.product_images && product.product_images.length > 0 ? (
+                      <img
+                        src={product.product_images[0].image_url}
+                        alt={product["Material Desc"] || product["Brand Desc"] || "Product"}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-48 bg-muted flex items-center justify-center">
+                        <span className="text-muted-foreground">No Image</span>
+                      </div>
+                    )}
                   </Link>
                   
                   {/* Badge */}
