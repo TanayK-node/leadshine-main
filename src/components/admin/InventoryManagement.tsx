@@ -110,7 +110,8 @@ export const InventoryManagement = () => {
   const filteredProducts = products.filter(product =>
     product["Brand Desc"]?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.SubBrand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product["Funskool Code"]?.toLowerCase().includes(searchTerm.toLowerCase())
+    product["Funskool Code"]?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product["Material Desc"]?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStockStatus = (quantity: number | null) => {
@@ -159,6 +160,7 @@ export const InventoryManagement = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Product Name</TableHead>
                 <TableHead>Brand</TableHead>
                 <TableHead>Sub-Brand</TableHead>
                 <TableHead>Category</TableHead>
@@ -174,7 +176,8 @@ export const InventoryManagement = () => {
                 const stockStatus = getStockStatus(product.QTY);
                 return (
                   <TableRow key={product.id}>
-                    <TableCell className="font-medium">{product["Brand Desc"] || 'N/A'}</TableCell>
+                    <TableCell className="font-medium">{product["Material Desc"] || 'N/A'}</TableCell>
+                    <TableCell>{product["Brand Desc"] || 'N/A'}</TableCell>
                     <TableCell>{product.SubBrand || 'N/A'}</TableCell>
                     <TableCell>{product["Super Category Description"] || 'N/A'}</TableCell>
                     <TableCell>{product["Funskool Code"] || 'N/A'}</TableCell>
