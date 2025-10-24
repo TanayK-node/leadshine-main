@@ -74,19 +74,32 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
     "Unit of measure of SKU length Width and Height": "cm",
   });
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      setImageFiles(files);
+      
+      // Create previews for all files
+      const previews: string[] = [];
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          previews.push(reader.result as string);
+          if (previews.length === files.length) {
+            setImagePreviews(previews);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
     }
+  };
+
+  const removeImage = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   useEffect(() => {
@@ -181,33 +194,45 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
       // Validate with zod
       const validated = productSchema.parse(productData);
 
-      // Upload image if provided
-      let imageUrl = null;
-      if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${crypto.randomUUID()}.${fileExt}`;
-        const filePath = `${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('product-images')
-          .upload(filePath, imageFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('product-images')
-          .getPublicUrl(filePath);
-
-        imageUrl = publicUrl;
-      }
-
       const { data: newProduct, error } = await supabase
         .from('products')
-        .insert([{ ...validated, image_url: imageUrl }])
+        .insert([validated])
         .select()
         .single();
 
       if (error) throw error;
+
+      // Upload images if provided
+      if (imageFiles.length > 0 && newProduct) {
+        const imageUploads = imageFiles.map(async (file, index) => {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${newProduct.id}/${crypto.randomUUID()}.${fileExt}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('product-images')
+            .upload(fileName, file);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(fileName);
+
+          return {
+            product_id: newProduct.id,
+            image_url: publicUrl,
+            display_order: index,
+          };
+        });
+
+        const imageData = await Promise.all(imageUploads);
+        
+        const { error: imagesError } = await supabase
+          .from('product_images')
+          .insert(imageData);
+
+        if (imagesError) throw imagesError;
+      }
 
       // Insert classifications
       if (selectedClassificationIds.length > 0 && newProduct) {
@@ -246,8 +271,8 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
       setSelectedBrandId("");
       setSelectedSubBrandId("");
       setSelectedClassificationIds([]);
-      setImageFile(null);
-      setImagePreview(null);
+      setImageFiles([]);
+      setImagePreviews([]);
       setOpen(false);
       
       if (onProductAdded) {
@@ -353,18 +378,34 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
             </div>
           </div>
 
-          {/* Product Image */}
+          {/* Product Images (Multiple) */}
           <div className="space-y-2">
-            <Label htmlFor="image">Product Image</Label>
+            <Label htmlFor="images">Product Images (Multiple)</Label>
             <Input
-              id="image"
+              id="images"
               type="file"
               accept="image/*"
+              multiple
               onChange={handleImageChange}
             />
-            {imagePreview && (
-              <div className="mt-2">
-                <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover rounded" />
+            {imagePreviews.length > 0 && (
+              <div className="mt-2 grid grid-cols-4 gap-2">
+                {imagePreviews.map((preview, index) => (
+                  <div key={index} className="relative">
+                    <img 
+                      src={preview} 
+                      alt={`Preview ${index + 1}`} 
+                      className="w-full h-24 object-cover rounded border"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -485,7 +526,7 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
 
           {/* Dimensions */}
           <div className="space-y-4">
-            <h3 className="font-medium">Dimensions (Optional)</h3>
+            <Label>Dimensions (Optional)</Label>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="length">Length</Label>
@@ -542,7 +583,6 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel

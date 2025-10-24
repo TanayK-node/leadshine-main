@@ -23,6 +23,8 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [productImages, setProductImages] = useState<string[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -37,6 +39,17 @@ const ProductDetail = () => {
 
         if (error) throw error;
         setProduct(data);
+
+        // Fetch product images
+        const { data: images } = await supabase
+          .from('product_images')
+          .select('image_url')
+          .eq('product_id', id)
+          .order('display_order');
+        
+        if (images && images.length > 0) {
+          setProductImages(images.map(img => img.image_url));
+        }
       } catch (error) {
         console.error('Error fetching product:', error);
         toast({
@@ -144,9 +157,9 @@ const ProductDetail = () => {
           {/* Product Image */}
           <div className="space-y-4">
             <div className="aspect-square bg-muted rounded-lg overflow-hidden flex items-center justify-center">
-              {product.image_url ? (
+              {productImages.length > 0 ? (
                 <img 
-                  src={product.image_url} 
+                  src={productImages[currentImageIndex]} 
                   alt={product["Material Desc"] || "Product"} 
                   className="w-full h-full object-cover"
                 />
@@ -154,6 +167,21 @@ const ProductDetail = () => {
                 <Package className="h-24 w-24 text-muted-foreground" />
               )}
             </div>
+            {productImages.length > 1 && (
+              <div className="grid grid-cols-4 gap-2">
+                {productImages.map((img, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`aspect-square rounded border-2 overflow-hidden ${
+                      index === currentImageIndex ? 'border-primary' : 'border-muted'
+                    }`}
+                  >
+                    <img src={img} alt={`Product ${index + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Info */}

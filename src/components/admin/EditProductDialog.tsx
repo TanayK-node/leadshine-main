@@ -78,26 +78,81 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
     "Unit of measure of SKU length Width and Height": product["Unit of measure of SKU length Width and Height"] || "cm",
   });
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(product.image_url || null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [existingImages, setExistingImages] = useState<Array<{id: string, url: string}>>([]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      setImageFiles(files);
+      
+      const previews: string[] = [];
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          previews.push(reader.result as string);
+          if (previews.length === files.length) {
+            setImagePreviews(previews);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removeNewImage = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = async (imageId: string) => {
+    try {
+      const { error } = await supabase
+        .from('product_images')
+        .delete()
+        .eq('id', imageId);
+      
+      if (error) throw error;
+      
+      setExistingImages(prev => prev.filter(img => img.id !== imageId));
+      toast({
+        title: "Success",
+        description: "Image removed",
+      });
+    } catch (error) {
+      console.error("Error removing image:", error);
+      toast({
+        title: "Error",
+        description: "Failed to remove image",
+        variant: "destructive",
+      });
     }
   };
 
   useEffect(() => {
     if (open) {
       fetchDropdownData();
+      fetchExistingImages();
     }
   }, [open]);
+
+  const fetchExistingImages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('product_images')
+        .select('id, image_url')
+        .eq('product_id', product.id)
+        .order('display_order');
+
+      if (error) throw error;
+      if (data) {
+        setExistingImages(data.map(img => ({ id: img.id, url: img.image_url })));
+      }
+    } catch (error) {
+      console.error('Error fetching existing images:', error);
+    }
+  };
 
   const fetchDropdownData = async () => {
     try {
@@ -206,32 +261,45 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
       // Validate with zod
       const validated = productSchema.parse(productData);
 
-      // Upload image if a new one is provided
-      let imageUrl = product.image_url;
-      if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${crypto.randomUUID()}.${fileExt}`;
-        const filePath = `${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('product-images')
-          .upload(filePath, imageFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('product-images')
-          .getPublicUrl(filePath);
-
-        imageUrl = publicUrl;
-      }
-
       const { error } = await supabase
         .from('products')
-        .update({ ...validated, image_url: imageUrl })
+        .update(validated)
         .eq('id', product.id);
 
       if (error) throw error;
+
+      // Upload new images if provided
+      if (imageFiles.length > 0) {
+        const currentMaxOrder = existingImages.length;
+        const imageUploads = imageFiles.map(async (file, index) => {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${product.id}/${crypto.randomUUID()}.${fileExt}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('product-images')
+            .upload(fileName, file);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(fileName);
+
+          return {
+            product_id: product.id,
+            image_url: publicUrl,
+            display_order: currentMaxOrder + index,
+          };
+        });
+
+        const imageData = await Promise.all(imageUploads);
+        
+        const { error: imagesError } = await supabase
+          .from('product_images')
+          .insert(imageData);
+
+        if (imagesError) throw imagesError;
+      }
 
       // Update classifications - delete existing and insert new ones
       const { error: deleteError } = await supabase
@@ -260,6 +328,8 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
       });
 
       setOpen(false);
+      setImageFiles([]);
+      setImagePreviews([]);
       
       if (onProductUpdated) {
         onProductUpdated();
@@ -363,18 +433,64 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
             </div>
           </div>
 
-          {/* Product Image */}
+          {/* Product Images */}
           <div className="space-y-2">
-            <Label htmlFor="image">Product Image</Label>
+            <Label htmlFor="images">Product Images</Label>
+            
+            {/* Existing Images */}
+            {existingImages.length > 0 && (
+              <div>
+                <p className="text-sm text-muted-foreground mb-2">Current Images</p>
+                <div className="grid grid-cols-4 gap-2 mb-4">
+                  {existingImages.map((img) => (
+                    <div key={img.id} className="relative">
+                      <img 
+                        src={img.url} 
+                        alt="Product" 
+                        className="w-full h-24 object-cover rounded border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeExistingImage(img.id)}
+                        className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Add New Images */}
             <Input
-              id="image"
+              id="images"
               type="file"
               accept="image/*"
+              multiple
               onChange={handleImageChange}
             />
-            {imagePreview && (
+            {imagePreviews.length > 0 && (
               <div className="mt-2">
-                <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover rounded" />
+                <p className="text-sm text-muted-foreground mb-2">New Images to Add</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative">
+                      <img 
+                        src={preview} 
+                        alt={`New ${index + 1}`} 
+                        className="w-full h-24 object-cover rounded border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeNewImage(index)}
+                        className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -495,7 +611,7 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
 
           {/* Dimensions */}
           <div className="space-y-4">
-            <h3 className="font-medium">Dimensions (Optional)</h3>
+            <Label>Dimensions (Optional)</Label>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="length">Length</Label>
@@ -552,7 +668,6 @@ export const EditProductDialog = ({ product, onProductUpdated }: { product: Prod
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
