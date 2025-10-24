@@ -127,8 +127,26 @@ const Checkout = () => {
 
       if (itemsError) throw itemsError;
 
-      // Store shipping information (you may want to create a separate table for this)
-      // For now, we'll just show success
+      // Update product stock quantities
+      for (const item of cartItems) {
+        const product = item.products;
+        if (!product) continue;
+
+        const currentStock = product.QTY || 0;
+        const newStock = currentStock - item.quantity;
+
+        // Check if sufficient stock is available
+        if (newStock < 0) {
+          throw new Error(`Insufficient stock for ${product["Material Desc"]}. Available: ${currentStock}, Requested: ${item.quantity}`);
+        }
+
+        const { error: stockError } = await supabase
+          .from('products')
+          .update({ QTY: newStock })
+          .eq('id', item.product_id);
+
+        if (stockError) throw stockError;
+      }
 
       // Clear cart
       await clearCart();
