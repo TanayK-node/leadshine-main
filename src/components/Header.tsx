@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { ShoppingCart, Search, Menu, User, LogOut } from "lucide-react";
+import { ShoppingCart, Search, Menu, User, LogOut, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import leadShineLogo from "@/assets/leadshine-logo.png";
 
 const Header = () => {
@@ -13,6 +14,7 @@ const Header = () => {
   const { toast } = useToast();
   const { cartCount } = useCart();
   const [user, setUser] = useState<any>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Check current session
@@ -130,9 +132,102 @@ const Header = () => {
                 Login
               </Button>
             )}
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-5 w-5" />
-            </Button>
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                <nav className="flex flex-col space-y-4 mt-8">
+                  <a 
+                    href="/shop-all" 
+                    className="text-foreground hover:text-primary font-medium transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Shop All Products
+                  </a>
+                  <a 
+                    href="/new-arrivals" 
+                    className="text-foreground hover:text-primary font-medium transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    New Arrivals
+                  </a>
+                  <a 
+                    href="/trending" 
+                    className="text-foreground hover:text-primary font-medium transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Trending
+                  </a>
+                  <a 
+                    href="/school-essentials" 
+                    className="text-foreground hover:text-primary font-medium transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    School Essentials
+                  </a>
+                  <a 
+                    href="/toys-and-games" 
+                    className="text-foreground hover:text-primary font-medium transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Toys & Games
+                  </a>
+                  <a 
+                    href="/kids-accessories" 
+                    className="text-foreground hover:text-primary font-medium transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Kids Accessories
+                  </a>
+                  <a 
+                    href="/art-and-crafts" 
+                    className="text-foreground hover:text-primary font-medium transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Art & Crafts
+                  </a>
+                  <a 
+                    href="#shop-by-age" 
+                    className="text-foreground hover:text-primary font-medium transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Shop by Age
+                  </a>
+                  <a 
+                    href="#shop-by-price" 
+                    className="text-foreground hover:text-primary font-medium transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Shop by Price
+                  </a>
+                  {user && (
+                    <>
+                      <a 
+                        href="/orders" 
+                        className="text-foreground hover:text-primary font-medium transition-colors py-2"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Orders
+                      </a>
+                      <Button 
+                        variant="ghost" 
+                        onClick={() => {
+                          handleLogout();
+                          setMobileMenuOpen(false);
+                        }}
+                        className="justify-start px-0"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Logout
+                      </Button>
+                    </>
+                  )}
+                </nav>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
 
