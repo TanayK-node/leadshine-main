@@ -153,9 +153,9 @@ const ProductDetail = () => {
           <span className="text-foreground">{product["Material Desc"]}</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-8">
           {/* Product Image */}
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             <div className="aspect-square bg-muted rounded-lg overflow-hidden flex items-center justify-center">
               {productImages.length > 0 ? (
                 <img 
@@ -164,7 +164,7 @@ const ProductDetail = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <Package className="h-24 w-24 text-muted-foreground" />
+                <Package className="h-16 md:h-24 w-16 md:w-24 text-muted-foreground" />
               )}
             </div>
             {productImages.length > 1 && (
@@ -185,29 +185,29 @@ const ProductDetail = () => {
           </div>
 
           {/* Product Info */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
                 {product["Material Desc"]}
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-sm md:text-base text-muted-foreground">
                 {product["Brand Desc"]} {product.SubBrand && `• ${product.SubBrand}`}
               </p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs md:text-sm text-muted-foreground mt-1">
                 Category: {product["Super Category Description"]}
               </p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs md:text-sm text-muted-foreground mt-1">
                 SKU: {product["Funskool Code"]}
               </p>
               {product.age_range && (
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-xs md:text-sm text-muted-foreground mt-1">
                   Age Range: {product.age_range}
                 </p>
               )}
             </div>
 
-            <div className="flex items-center gap-4">
-              <span className="text-3xl font-bold text-primary">
+            <div className="flex flex-wrap items-center gap-3 md:gap-4">
+              <span className="text-2xl md:text-3xl font-bold text-primary">
                 ₹{product["MRP (INR)"]}
               </span>
               <Badge variant={product.QTY && product.QTY > 0 ? "default" : "destructive"}>
@@ -216,22 +216,22 @@ const ProductDetail = () => {
             </div>
 
             {/* Key Details */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 text-sm">
               <div>
-                <span className="text-muted-foreground">Product Name:</span>
-                <p className="font-medium">{product["Material Desc"]}</p>
+                <span className="text-muted-foreground text-xs md:text-sm">Product Name:</span>
+                <p className="font-medium text-sm md:text-base">{product["Material Desc"]}</p>
               </div>
               <div>
-                <span className="text-muted-foreground">Brand:</span>
-                <p className="font-medium">{product["Brand Desc"]}</p>
+                <span className="text-muted-foreground text-xs md:text-sm">Brand:</span>
+                <p className="font-medium text-sm md:text-base">{product["Brand Desc"]}</p>
               </div>
               <div>
-                <span className="text-muted-foreground">Sub-Brand:</span>
-                <p className="font-medium">{product.SubBrand || "N/A"}</p>
+                <span className="text-muted-foreground text-xs md:text-sm">Sub-Brand:</span>
+                <p className="font-medium text-sm md:text-base">{product.SubBrand || "N/A"}</p>
               </div>
               <div>
-                <span className="text-muted-foreground">Type:</span>
-                <p className="font-medium">{product["Elec/ Non Elec"]}</p>
+                <span className="text-muted-foreground text-xs md:text-sm">Type:</span>
+                <p className="font-medium text-sm md:text-base">{product["Elec/ Non Elec"]}</p>
               </div>
             </div>
 
@@ -258,7 +258,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               <Button 
                 className="flex-1" 
                 size="lg"
@@ -268,12 +268,14 @@ const ProductDetail = () => {
                 <ShoppingCart className="h-4 w-4 mr-2" />
                 Add to Cart
               </Button>
-              <Button variant="outline" size="lg" onClick={addToWishlist}>
-                <Heart className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="lg">
-                <Share2 className="h-4 w-4" />
-              </Button>
+              <div className="flex gap-3">
+                <Button variant="outline" size="lg" onClick={addToWishlist} className="flex-1 sm:flex-none">
+                  <Heart className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="lg" className="flex-1 sm:flex-none">
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             {/* Features */}
@@ -293,9 +295,9 @@ const ProductDetail = () => {
         {/* Product Details Tabs */}
         <Tabs defaultValue="specifications" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="specifications">Specifications</TabsTrigger>
-            <TabsTrigger value="description">Description</TabsTrigger>
-            <TabsTrigger value="shipping">Shipping Info</TabsTrigger>
+            <TabsTrigger value="specifications" className="text-xs sm:text-sm">Specifications</TabsTrigger>
+            <TabsTrigger value="description" className="text-xs sm:text-sm">Description</TabsTrigger>
+            <TabsTrigger value="shipping" className="text-xs sm:text-sm">Shipping Info</TabsTrigger>
           </TabsList>
           
           <TabsContent value="specifications" className="mt-6">

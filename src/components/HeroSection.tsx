@@ -15,14 +15,14 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <h1 className="text-5xl lg:text-6xl font-display font-bold text-foreground leading-tight">
+          <div className="space-y-6 md:space-y-8">
+            <div className="space-y-3 md:space-y-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground leading-tight">
                 Premium{" "}
                 <span className="text-primary font-display">Wholesale Toys</span>{" "}
                 for Every Child
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed">
                 Discover our curated collection of educational, safe, and fun toys. 
                 Perfect for retailers, educators, and toy distributors worldwide.
               </p>
@@ -56,38 +56,38 @@ const HeroSection = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 pt-8">
+            <div className="grid grid-cols-3 gap-4 md:gap-8 pt-6 md:pt-8">
               <div className="text-center">
-                <div className="text-3xl font-display font-bold text-primary">500+</div>
-                <div className="text-sm text-muted-foreground">Products</div>
+                <div className="text-2xl md:text-3xl font-display font-bold text-primary">500+</div>
+                <div className="text-xs md:text-sm text-muted-foreground">Products</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-display font-bold text-primary">50K+</div>
-                <div className="text-sm text-muted-foreground">Happy Retailers</div>
+                <div className="text-2xl md:text-3xl font-display font-bold text-primary">50K+</div>
+                <div className="text-xs md:text-sm text-muted-foreground">Happy Retailers</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-display font-bold text-primary">98%</div>
-                <div className="text-sm text-muted-foreground">Satisfaction</div>
+                <div className="text-2xl md:text-3xl font-display font-bold text-primary">98%</div>
+                <div className="text-xs md:text-sm text-muted-foreground">Satisfaction</div>
               </div>
             </div>
           </div>
 
           {/* Right image */}
-          <div className="relative">
-            <div className="relative rounded-3xl overflow-hidden shadow-glow">
+          <div className="relative mt-8 lg:mt-0">
+            <div className="relative rounded-2xl md:rounded-3xl overflow-hidden shadow-glow">
               <img
                 src={heroToysImage}
                 alt="Premium wholesale toys collection including educational blocks, plush toys, and colorful vehicles"
-                className="w-full h-[500px] object-cover"
+                className="w-full h-[300px] md:h-[400px] lg:h-[500px] object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
             
             {/* Floating promotion card */}
-            <div className="absolute -bottom-6 -left-6 bg-card rounded-2xl p-6 shadow-glow border border-border">
+            <div className="absolute -bottom-4 md:-bottom-6 left-4 md:-left-6 bg-card rounded-xl md:rounded-2xl p-4 md:p-6 shadow-glow border border-border">
               <div className="text-center">
-                <div className="text-3xl font-display font-bold text-primary mb-1">50%</div>
-                <div className="text-sm text-muted-foreground">Bulk Discount</div>
+                <div className="text-2xl md:text-3xl font-display font-bold text-primary mb-1">50%</div>
+                <div className="text-xs md:text-sm text-muted-foreground">Bulk Discount</div>
                 <div className="text-xs text-muted-foreground">on first order</div>
               </div>
             </div>

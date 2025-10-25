@@ -88,69 +88,71 @@ const Cart = () => {
 
               return (
                 <Card key={item.id}>
-                  <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex flex-col sm:flex-row gap-4">
                       {product.product_images && product.product_images.length > 0 ? (
                         <img
                           src={product.product_images[0].image_url}
                           alt={product["Material Desc"] || "Product"}
-                          className="w-20 h-20 object-cover rounded-lg"
+                          className="w-full sm:w-20 h-40 sm:h-20 object-cover rounded-lg"
                         />
                       ) : (
-                        <div className="w-20 h-20 bg-muted flex items-center justify-center rounded-lg">
+                        <div className="w-full sm:w-20 h-40 sm:h-20 bg-muted flex items-center justify-center rounded-lg">
                           <span className="text-xs text-muted-foreground">No Image</span>
                         </div>
                       )}
                       
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-foreground">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-foreground text-sm md:text-base">
                           {product["Brand Desc"]} {product.SubBrand}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs md:text-sm text-muted-foreground truncate">
                           {product["Super Category Description"]}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           SKU: {product["Funskool Code"]}
                         </p>
-                        <p className="text-lg font-bold text-primary mt-2">
+                        <p className="text-base md:text-lg font-bold text-primary mt-1 md:mt-2">
                           ₹{product["MRP (INR)"]}
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="w-12 text-center font-medium">
-                          {item.quantity}
-                        </span>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-7 md:h-8 md:w-8"
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          >
+                            <Minus className="h-3 w-3 md:h-4 md:w-4" />
+                          </Button>
+                          <span className="w-8 md:w-12 text-center font-medium text-sm">
+                            {item.quantity}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-7 md:h-8 md:w-8"
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          >
+                            <Plus className="h-3 w-3 md:h-4 md:w-4" />
+                          </Button>
+                        </div>
 
-                      <div className="text-right">
-                        <p className="font-bold text-lg">
-                          ₹{product["MRP (INR)"] * item.quantity}
-                        </p>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeFromCart(item.id)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="text-right">
+                          <p className="font-bold text-base md:text-lg">
+                            ₹{product["MRP (INR)"] * item.quantity}
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeFromCart(item.id)}
+                            className="text-destructive hover:text-destructive h-8 p-1"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
