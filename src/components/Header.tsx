@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { ShoppingCart, Search, Menu, User, LogOut, X } from "lucide-react";
+import { ShoppingCart, Search, Menu, User, LogOut, X, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import leadShineLogo from "@/assets/leadshine-logo.png";
 
@@ -13,6 +14,7 @@ const Header = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { cartCount } = useCart();
+  const { wishlistItems } = useWishlist();
   const [user, setUser] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -104,6 +106,14 @@ const Header = () => {
                 </Button>
                 <Button variant="ghost" size="icon" onClick={() => navigate('/profile')}>
                   <User className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="relative" onClick={() => navigate('/wishlist')}>
+                  <Heart className="h-5 w-5" />
+                  {wishlistItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                      {wishlistItems.length}
+                    </span>
+                  )}
                 </Button>
                 <Button variant="ghost" size="icon" className="relative" onClick={() => navigate('/cart')}>
                   <ShoppingCart className="h-5 w-5" />
@@ -205,6 +215,13 @@ const Header = () => {
                   </a>
                   {user && (
                     <>
+                      <a 
+                        href="/wishlist" 
+                        className="text-foreground hover:text-primary font-medium transition-colors py-2"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Wishlist
+                      </a>
                       <a 
                         href="/orders" 
                         className="text-foreground hover:text-primary font-medium transition-colors py-2"

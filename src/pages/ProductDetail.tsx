@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Product = Tables<"products">;
@@ -20,6 +21,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addToCart: addToCartContext } = useCart();
+  const { addToWishlist: addToWishlistContext, removeFromWishlist, isInWishlist } = useWishlist();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -103,11 +105,14 @@ const ProductDetail = () => {
     }
   };
 
-  const addToWishlist = () => {
-    toast({
-      title: "Added to Wishlist",
-      description: "Product added to your wishlist",
-    });
+  const addToWishlist = async () => {
+    if (!id) return;
+    
+    if (isInWishlist(id)) {
+      await removeFromWishlist(id);
+    } else {
+      await addToWishlistContext(id);
+    }
   };
 
   const shareProduct = async () => {
@@ -315,8 +320,13 @@ const ProductDetail = () => {
                 Add to Cart
               </Button>
               <div className="flex gap-3">
-                <Button variant="outline" size="lg" onClick={addToWishlist} className="flex-1 sm:flex-none">
-                  <Heart className="h-4 w-4" />
+                <Button 
+                  variant={isInWishlist(id || '') ? "default" : "outline"} 
+                  size="lg" 
+                  onClick={addToWishlist} 
+                  className="flex-1 sm:flex-none"
+                >
+                  <Heart className={`h-4 w-4 ${isInWishlist(id || '') ? 'fill-current' : ''}`} />
                 </Button>
                 <Button variant="outline" size="lg" onClick={shareProduct} className="flex-1 sm:flex-none">
                   <Share2 className="h-4 w-4" />
