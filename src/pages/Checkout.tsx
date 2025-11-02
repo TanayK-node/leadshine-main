@@ -34,6 +34,12 @@ const Checkout = () => {
   const [user, setUser] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
   
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  
   const [formData, setFormData] = useState<CheckoutFormData>({
     fullName: "",
     email: "",
@@ -70,12 +76,110 @@ const Checkout = () => {
   }, 0);
   
   const shipping = subtotal > 500 ? 0 : 50;
-  const total = subtotal + shipping;
+  const total = subtotal + shipping - discount;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
+    });
+  };
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a coupon code",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setCouponLoading(true);
+    try {
+      const { data: coupon, error } = await supabase
+        .from("coupons")
+        .select("*")
+        .eq("code", couponCode.toUpperCase())
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!coupon) {
+        toast({
+          title: "Error",
+          description: "Invalid coupon code",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const now = new Date();
+      const validFrom = new Date(coupon.valid_from);
+      const validUntil = new Date(coupon.valid_until);
+
+      if (now < validFrom || now > validUntil) {
+        toast({
+          title: "Error",
+          description: "This coupon has expired or is not yet valid",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (coupon.max_uses && coupon.current_uses >= coupon.max_uses) {
+        toast({
+          title: "Error",
+          description: "This coupon has reached its usage limit",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (coupon.min_purchase_amount && subtotal < coupon.min_purchase_amount) {
+        toast({
+          title: "Error",
+          description: `Minimum purchase amount of ₹${coupon.min_purchase_amount} required`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      let discountAmount = 0;
+      if (coupon.discount_type === "percentage") {
+        discountAmount = (subtotal * coupon.discount_value) / 100;
+        if (coupon.max_discount_amount && discountAmount > coupon.max_discount_amount) {
+          discountAmount = coupon.max_discount_amount;
+        }
+      } else {
+        discountAmount = coupon.discount_value;
+      }
+
+      setAppliedCoupon(coupon);
+      setDiscount(discountAmount);
+      toast({
+        title: "Success",
+        description: `Coupon applied! You saved ₹${discountAmount.toFixed(2)}`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to apply coupon: " + error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setDiscount(0);
+    setCouponCode("");
+    toast({
+      title: "Success",
+      description: "Coupon removed",
     });
   };
 
@@ -107,6 +211,8 @@ const Checkout = () => {
           order_number: orderNumber,
           total_amount: total,
           status: 'pending',
+          coupon_id: appliedCoupon?.id || null,
+          discount_amount: discount
         })
         .select()
         .single();
@@ -146,6 +252,24 @@ const Checkout = () => {
           .eq('id', item.product_id);
 
         if (stockError) throw stockError;
+      }
+
+      // Update coupon usage if applied
+      if (appliedCoupon) {
+        const { error: couponError } = await supabase
+          .from('coupons')
+          .update({ current_uses: appliedCoupon.current_uses + 1 })
+          .eq('id', appliedCoupon.id);
+
+        if (couponError) console.error('Failed to update coupon usage:', couponError);
+
+        // Record coupon usage
+        await supabase.from('coupon_usage').insert({
+          coupon_id: appliedCoupon.id,
+          user_id: user.id,
+          order_id: order.id,
+          discount_amount: discount
+        });
       }
 
       // Clear cart
@@ -368,6 +492,12 @@ const Checkout = () => {
                       <span>Shipping</span>
                       <span>{shipping === 0 ? "Free" : `₹${shipping}`}</span>
                     </div>
+                    {discount > 0 && (
+                      <div className="flex justify-between text-green-600 font-medium">
+                        <span>Discount ({appliedCoupon?.code})</span>
+                        <span>-₹{discount.toFixed(2)}</span>
+                      </div>
+                    )}
                   </div>
 
                   <Separator />
@@ -375,6 +505,47 @@ const Checkout = () => {
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
                     <span>₹{total.toFixed(2)}</span>
+                  </div>
+
+                  {/* Coupon Code Section */}
+                  <div className="space-y-3 pt-4 border-t">
+                    <Label htmlFor="coupon">Have a Coupon Code?</Label>
+                    {appliedCoupon ? (
+                      <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <div>
+                          <p className="font-mono font-bold text-green-700">{appliedCoupon.code}</p>
+                          <p className="text-sm text-green-600">
+                            Saved ₹{discount.toFixed(2)}
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={removeCoupon}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Input
+                          id="coupon"
+                          placeholder="Enter coupon code"
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                          className="font-mono"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={applyCoupon}
+                          disabled={couponLoading}
+                        >
+                          {couponLoading ? "Applying..." : "Apply"}
+                        </Button>
+                      </div>
+                    )}
                   </div>
 
                   <Button 

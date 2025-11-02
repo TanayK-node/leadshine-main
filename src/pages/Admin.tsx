@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrderManagement } from "@/components/admin/OrderManagement";
 import { InventoryManagement } from "@/components/admin/InventoryManagement";
+import { CouponManagement } from "@/components/admin/CouponManagement";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingCart, Package, TrendingUp, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -145,12 +146,15 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="orders" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 bg-card border">
+          <TabsList className="grid w-full grid-cols-3 bg-card border">
             <TabsTrigger value="orders" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Order Management
             </TabsTrigger>
             <TabsTrigger value="inventory" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Inventory Management
+            </TabsTrigger>
+            <TabsTrigger value="coupons" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Coupon Management
             </TabsTrigger>
           </TabsList>
           
@@ -160,6 +164,10 @@ const Admin = () => {
           
           <TabsContent value="inventory">
             <InventoryManagement />
+          </TabsContent>
+
+          <TabsContent value="coupons">
+            <CouponManagement />
           </TabsContent>
         </Tabs>
       </div>
