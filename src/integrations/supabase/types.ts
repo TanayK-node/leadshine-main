@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcement_banner: {
+        Row: {
+          bg_color: string | null
+          button_link: string | null
+          button_text: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          text: string
+          text_color: string | null
+          updated_at: string
+        }
+        Insert: {
+          bg_color?: string | null
+          button_link?: string | null
+          button_text?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          text: string
+          text_color?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bg_color?: string | null
+          button_link?: string | null
+          button_text?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          text?: string
+          text_color?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       brands: {
         Row: {
           created_at: string | null

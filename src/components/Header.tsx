@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ShoppingCart, Search, Menu, User, LogOut, X, Heart, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
@@ -11,6 +11,15 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import leadShineLogo from "@/assets/leadshine-logo.png";
+
+interface AnnouncementBanner {
+  text: string;
+  button_text: string | null;
+  button_link: string | null;
+  is_active: boolean;
+  bg_color: string;
+  text_color: string;
+}
 
 const Header = () => {
   const navigate = useNavigate();
@@ -23,6 +32,28 @@ const Header = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [priceFilter, setPriceFilter] = useState("all");
   const [ageFilter, setAgeFilter] = useState("all");
+  const [banner, setBanner] = useState<AnnouncementBanner | null>(null);
+
+  useEffect(() => {
+    fetchBanner();
+  }, []);
+
+  const fetchBanner = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("announcement_banner")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (data) setBanner(data);
+    } catch (error) {
+      console.error("Error fetching banner:", error);
+    }
+  };
 
   useEffect(() => {
     // Check current session
@@ -77,11 +108,20 @@ const Header = () => {
   return (
     <header className="bg-card shadow-card border-b border-border">
       {/* Top banner */}
-      <div className="bg-gradient-primary text-primary-foreground text-center py-2 px-4">
-        <p className="text-sm font-medium">
-          🎉 BIGGEST Wholesale Sale - Up to 50% Off + Free Shipping on Orders $500+
-        </p>
-      </div>
+      {banner && (
+        <div className={`${banner.bg_color} ${banner.text_color} text-center py-2 px-4`}>
+          <div className="flex items-center justify-center gap-4">
+            <p className="text-sm font-medium">{banner.text}</p>
+            {banner.button_text && banner.button_link && (
+              <Link to={banner.button_link}>
+                <Button size="sm" variant="secondary" className="h-7 text-xs">
+                  {banner.button_text}
+                </Button>
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Main header */}
       <div className="container mx-auto px-4 py-4">
