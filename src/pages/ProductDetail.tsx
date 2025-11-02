@@ -218,16 +218,14 @@ const ProductDetail = () => {
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`aspect-square rounded border-2 overflow-hidden ${
+                    className={`aspect-square rounded border-2 overflow-hidden relative ${
                       index === currentImageIndex ? 'border-primary' : 'border-muted'
                     }`}
                   >
                     {item.type === 'image' ? (
                       <img src={item.url} alt={`Product ${index + 1}`} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-muted">
-                        <Package className="h-6 w-6 text-muted-foreground" />
-                      </div>
+                      <video src={item.url} className="w-full h-full object-cover" />
                     )}
                   </button>
                 ))}

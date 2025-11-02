@@ -199,20 +199,6 @@ const Header = () => {
                   >
                     Art & Crafts
                   </a>
-                  <a 
-                    href="#shop-by-age" 
-                    className="text-foreground hover:text-primary font-medium transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Shop by Age
-                  </a>
-                  <a 
-                    href="#shop-by-price" 
-                    className="text-foreground hover:text-primary font-medium transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Shop by Price
-                  </a>
                   {user && (
                     <>
                       <a 
@@ -284,16 +270,6 @@ const Header = () => {
             <li>
               <a href="/art-and-crafts" className="text-foreground hover:text-primary font-medium transition-colors">
                 Art & Crafts
-              </a>
-            </li>
-            <li>
-              <a href="#shop-by-age" className="text-foreground hover:text-primary font-medium transition-colors">
-                Shop by Age
-              </a>
-            </li>
-            <li>
-              <a href="#shop-by-price" className="text-foreground hover:text-primary font-medium transition-colors">
-                Shop by Price
               </a>
             </li>
           </ul>

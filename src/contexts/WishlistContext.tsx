@@ -60,7 +60,25 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
           .in('id', productIds);
 
         if (productsError) throw productsError;
-        setWishlistItems(products || []);
+        
+        // Fetch product images for each product
+        const productsWithImages = await Promise.all(
+          (products || []).map(async (product) => {
+            const { data: images } = await supabase
+              .from('product_images')
+              .select('image_url')
+              .eq('product_id', product.id)
+              .order('display_order')
+              .limit(1);
+            
+            return {
+              ...product,
+              image_url: images && images.length > 0 ? images[0].image_url : product.image_url
+            };
+          })
+        );
+        
+        setWishlistItems(productsWithImages);
       } else {
         setWishlistItems([]);
       }
