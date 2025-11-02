@@ -25,10 +25,11 @@ const ShopAllProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
   const [sortBy, setSortBy] = useState("name");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterAge, setFilterAge] = useState(searchParams.get("age") || "all");
+  const [priceFilter, setPriceFilter] = useState(searchParams.get("price") || "all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const handleAddToCart = async (productId: string) => {
@@ -106,6 +107,27 @@ const ShopAllProducts = () => {
       );
     }
 
+    // Price filter
+    if (priceFilter !== "all") {
+      filtered = filtered.filter(product => {
+        const price = product["MRP (INR)"] || 0;
+        switch (priceFilter) {
+          case "0-500":
+            return price < 500;
+          case "500-1000":
+            return price >= 500 && price < 1000;
+          case "1000-2000":
+            return price >= 1000 && price < 2000;
+          case "2000-5000":
+            return price >= 2000 && price < 5000;
+          case "5000+":
+            return price >= 5000;
+          default:
+            return true;
+        }
+      });
+    }
+
     // Sort
     filtered.sort((a, b) => {
       switch (sortBy) {
@@ -123,7 +145,7 @@ const ShopAllProducts = () => {
     });
 
     setFilteredProducts(filtered);
-  }, [products, searchTerm, sortBy, filterCategory, filterAge]);
+  }, [products, searchTerm, sortBy, filterCategory, filterAge, priceFilter]);
 
   const categories = Array.from(new Set(products.map(p => p["Super Category Description"]).filter(Boolean)));
   const ageRanges = ["0-2 Years", "3-5 Years", "6-8 Years", "9-12 Years", "13+ Years"];
@@ -152,85 +174,49 @@ const ShopAllProducts = () => {
       <Header />
       
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-4">All Products</h1>
-          <p className="text-muted-foreground">Browse our complete catalog of {products.length} products</p>
-        </div>
-
-        {/* Filters and Search */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-8 p-4 bg-muted/50 rounded-lg">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">All Products</h1>
+            <p className="text-muted-foreground">
+              Showing {filteredProducts.length} of {products.length} products
+              {searchTerm && ` for "${searchTerm}"`}
+            </p>
           </div>
           
-          <Select value={filterCategory} onValueChange={setFilterCategory}>
-            <SelectTrigger className="w-full lg:w-48">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-4">
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name">Name A-Z</SelectItem>
+                <SelectItem value="price-low">Price: Low to High</SelectItem>
+                <SelectItem value="price-high">Price: High to Low</SelectItem>
+                <SelectItem value="newest">Newest First</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Select value={filterAge} onValueChange={setFilterAge}>
-            <SelectTrigger className="w-full lg:w-48">
-              <SelectValue placeholder="Age Range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Ages</SelectItem>
-              {ageRanges.map((age) => (
-                <SelectItem key={age} value={age}>
-                  {age}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full lg:w-48">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="name">Name A-Z</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
-              <SelectItem value="newest">Newest First</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <div className="flex gap-2">
-            <Button
-              variant={viewMode === "grid" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("grid")}
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === "list" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("list")}
-            >
-              <List className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant={viewMode === "grid" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+              >
+                <Grid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+              >
+                <List className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Results Count */}
-        <div className="mb-6">
+        <div className="mb-6 hidden">
           <p className="text-muted-foreground">
             Showing {filteredProducts.length} of {products.length} products
           </p>

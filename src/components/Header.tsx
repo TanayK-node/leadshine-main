@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ShoppingCart, Search, Menu, User, LogOut, X, Heart } from "lucide-react";
+import { ShoppingCart, Search, Menu, User, LogOut, X, Heart, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import leadShineLogo from "@/assets/leadshine-logo.png";
 
 const Header = () => {
@@ -17,6 +19,10 @@ const Header = () => {
   const { wishlistItems } = useWishlist();
   const [user, setUser] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [priceFilter, setPriceFilter] = useState("all");
+  const [ageFilter, setAgeFilter] = useState("all");
 
   useEffect(() => {
     // Check current session
@@ -55,6 +61,19 @@ const Header = () => {
     }
   };
 
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (searchTerm) params.set("search", searchTerm);
+    if (priceFilter !== "all") params.set("price", priceFilter);
+    if (ageFilter !== "all") params.set("age", ageFilter);
+    
+    navigate(`/shop-all?${params.toString()}`);
+    setSearchOpen(false);
+    setSearchTerm("");
+    setPriceFilter("all");
+    setAgeFilter("all");
+  };
+
   return (
     <header className="bg-card shadow-card border-b border-border">
       {/* Top banner */}
@@ -66,9 +85,9 @@ const Header = () => {
 
       {/* Main header */}
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 flex-shrink-0">
             <a href="/" className="flex items-center space-x-3">
               <img 
                 src={leadShineLogo} 
@@ -82,14 +101,72 @@ const Header = () => {
           </div>
 
           {/* Search bar */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Search toys, games, and more..."
-                className="pl-10 pr-4 bg-muted/50 border-muted focus:bg-background"
-              />
-            </div>
+          <div className="hidden md:flex flex-1 max-w-2xl mx-4">
+            <Popover open={searchOpen} onOpenChange={setSearchOpen}>
+              <PopoverTrigger asChild>
+                <div className="relative w-full cursor-pointer">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 pointer-events-none" />
+                  <Input
+                    placeholder="Search toys, games, and more..."
+                    className="pl-10 pr-10 bg-muted/50 border-muted focus:bg-background cursor-pointer"
+                    readOnly
+                  />
+                  <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 pointer-events-none" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[400px] p-4" align="start">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Search Products</label>
+                    <Input
+                      placeholder="Enter product name, brand..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Price Range</label>
+                    <Select value={priceFilter} onValueChange={setPriceFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select price range" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Prices</SelectItem>
+                        <SelectItem value="0-500">Under ₹500</SelectItem>
+                        <SelectItem value="500-1000">₹500 - ₹1000</SelectItem>
+                        <SelectItem value="1000-2000">₹1000 - ₹2000</SelectItem>
+                        <SelectItem value="2000-5000">₹2000 - ₹5000</SelectItem>
+                        <SelectItem value="5000+">Above ₹5000</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Age Range</label>
+                    <Select value={ageFilter} onValueChange={setAgeFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select age range" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Ages</SelectItem>
+                        <SelectItem value="0-2 Years">0-2 Years</SelectItem>
+                        <SelectItem value="3-5 Years">3-5 Years</SelectItem>
+                        <SelectItem value="6-8 Years">6-8 Years</SelectItem>
+                        <SelectItem value="9-12 Years">9-12 Years</SelectItem>
+                        <SelectItem value="13+ Years">13+ Years</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <Button onClick={handleSearch} className="w-full">
+                    <Search className="h-4 w-4 mr-2" />
+                    Search Products
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Right actions */}
@@ -235,8 +312,8 @@ const Header = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="mt-4 hidden md:block">
-          <ul className="flex space-x-8">
+        <nav className="mt-6 hidden md:block">
+          <ul className="flex space-x-6 justify-center">
             <li>
               <a href="/shop-all" className="text-foreground hover:text-primary font-medium transition-colors">
                 Shop All Products
