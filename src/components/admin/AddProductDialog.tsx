@@ -79,6 +79,8 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string>("");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -103,6 +105,23 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
   const removeImage = (index: number) => {
     setImageFiles(prev => prev.filter((_, i) => i !== index));
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setVideoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setVideoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeVideo = () => {
+    setVideoFile(null);
+    setVideoPreview("");
   };
 
   useEffect(() => {
@@ -238,6 +257,30 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
         if (imagesError) throw imagesError;
       }
 
+      // Upload video if provided
+      if (videoFile && newProduct) {
+        const fileExt = videoFile.name.split('.').pop();
+        const fileName = `${newProduct.id}/${crypto.randomUUID()}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('product-videos')
+          .upload(fileName, videoFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('product-videos')
+          .getPublicUrl(fileName);
+
+        // Update product with video URL
+        const { error: updateError } = await supabase
+          .from('products')
+          .update({ video_url: publicUrl })
+          .eq('id', newProduct.id);
+
+        if (updateError) throw updateError;
+      }
+
       // Insert classifications
       if (selectedClassificationIds.length > 0 && newProduct) {
         const classificationInserts = selectedClassificationIds.map(classId => ({
@@ -278,6 +321,8 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
       setSelectedClassificationIds([]);
       setImageFiles([]);
       setImagePreviews([]);
+      setVideoFile(null);
+      setVideoPreview("");
       setOpen(false);
       
       if (onProductAdded) {
@@ -415,7 +460,32 @@ export const AddProductDialog = ({ onProductAdded }: { onProductAdded?: () => vo
             )}
           </div>
 
-          {/* Product Name */}
+          {/* Product Video (Optional) */}
+          <div className="space-y-2">
+            <Label htmlFor="video">Product Video (Optional)</Label>
+            <Input
+              id="video"
+              type="file"
+              accept="video/*"
+              onChange={handleVideoChange}
+            />
+            {videoPreview && (
+              <div className="mt-2 relative">
+                <video 
+                  src={videoPreview} 
+                  controls 
+                  className="w-full h-48 object-cover rounded border"
+                />
+                <button
+                  type="button"
+                  onClick={removeVideo}
+                  className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full px-3 py-1 text-sm"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
           <div className="space-y-2">
             <Label htmlFor="productName">Product Name *</Label>
             <Input

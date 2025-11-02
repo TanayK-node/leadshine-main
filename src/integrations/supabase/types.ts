@@ -256,6 +256,7 @@ export type Database = {
           "Super Category Description": string | null
           "Unit of measure of SKU length Width and Height": string | null
           updated_at: string | null
+          video_url: string | null
         }
         Insert: {
           age_range?: string | null
@@ -278,6 +279,7 @@ export type Database = {
           "Super Category Description"?: string | null
           "Unit of measure of SKU length Width and Height"?: string | null
           updated_at?: string | null
+          video_url?: string | null
         }
         Update: {
           age_range?: string | null
@@ -300,6 +302,7 @@ export type Database = {
           "Super Category Description"?: string | null
           "Unit of measure of SKU length Width and Height"?: string | null
           updated_at?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {

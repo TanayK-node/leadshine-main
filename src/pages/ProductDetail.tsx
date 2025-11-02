@@ -25,6 +25,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [productImages, setProductImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [videoUrl, setVideoUrl] = useState<string>("");
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -39,6 +40,7 @@ const ProductDetail = () => {
 
         if (error) throw error;
         setProduct(data);
+        setVideoUrl(data.video_url || "");
 
         // Fetch product images
         const { data: images } = await supabase
@@ -99,6 +101,29 @@ const ProductDetail = () => {
       title: "Added to Wishlist",
       description: "Product added to your wishlist",
     });
+  };
+
+  const shareProduct = async () => {
+    const shareData = {
+      title: product?.["Material Desc"] || "Product",
+      text: `Check out ${product?.["Material Desc"]} from ${product?.["Brand Desc"]}`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Link Copied",
+          description: "Product link copied to clipboard",
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
   };
 
   if (loading) {
@@ -180,6 +205,16 @@ const ProductDetail = () => {
                     <img src={img} alt={`Product ${index + 1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
+              </div>
+            )}
+            {videoUrl && (
+              <div className="mt-4">
+                <h3 className="text-sm font-medium mb-2">Product Video</h3>
+                <video 
+                  src={videoUrl} 
+                  controls 
+                  className="w-full rounded-lg"
+                />
               </div>
             )}
           </div>
@@ -272,7 +307,7 @@ const ProductDetail = () => {
                 <Button variant="outline" size="lg" onClick={addToWishlist} className="flex-1 sm:flex-none">
                   <Heart className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="lg" className="flex-1 sm:flex-none">
+                <Button variant="outline" size="lg" onClick={shareProduct} className="flex-1 sm:flex-none">
                   <Share2 className="h-4 w-4" />
                 </Button>
               </div>
