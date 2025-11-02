@@ -28,6 +28,22 @@ const Admin = () => {
         navigate("/auth");
         return;
       }
+
+      // Check if user has admin role
+      const { data: isAdmin, error } = await supabase.rpc('is_admin');
+      
+      if (error) {
+        console.error('Error checking admin status:', error);
+        toast.error("Failed to verify admin access");
+        navigate("/");
+        return;
+      }
+
+      if (!isAdmin) {
+        toast.error("Access denied. Admin privileges required.");
+        navigate("/");
+        return;
+      }
       
       await fetchStats();
       setIsLoading(false);
