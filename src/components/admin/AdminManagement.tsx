@@ -41,49 +41,11 @@ export const AdminManagement = () => {
 
   const fetchAdmins = async () => {
     try {
-      // First get admin roles
-      const { data: adminRoles, error: rolesError } = await supabase
-        .from("user_roles")
-        .select("*")
-        .eq("role", "admin")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.rpc('get_admin_users');
 
-      if (rolesError) throw rolesError;
+      if (error) throw error;
 
-      // Then get user emails from auth.users using RPC or direct query
-      const userIds = adminRoles?.map(admin => admin.user_id) || [];
-      
-      // Fetch profiles to get email info
-      const { data: profiles, error: profilesError } = await supabase
-        .from("profiles")
-        .select("id")
-        .in("id", userIds);
-
-      // Get session to fetch auth user data
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      // We'll need to get emails from auth.users via admin API or store them in profiles
-      // For now, let's use a workaround by calling auth admin API
-      const adminsWithEmails = await Promise.all(
-        (adminRoles || []).map(async (admin) => {
-          // Try to get email from Supabase Admin API (requires service role)
-          // As fallback, we'll show the user_id
-          try {
-            const { data: { user } } = await supabase.auth.admin.getUserById(admin.user_id);
-            return {
-              ...admin,
-              email: user?.email || 'Unknown'
-            };
-          } catch {
-            return {
-              ...admin,
-              email: admin.user_id
-            };
-          }
-        })
-      );
-
-      setAdmins(adminsWithEmails);
+      setAdmins(data || []);
     } catch (error: any) {
       console.error('Error fetching admins:', error);
       toast.error("Failed to load admin users");
@@ -104,41 +66,21 @@ export const AdminManagement = () => {
         return;
       }
 
-      // Check if user exists and get their user_id
-      const { data: { users }, error: userError } = await supabase.auth.admin.listUsers();
-      
-      const user = users?.find(u => u.email?.toLowerCase() === newAdminEmail.toLowerCase());
-      
-      if (!user) {
-        toast.error("User with this email does not exist. They must sign up first.");
+      // Call the database function to add admin
+      const { data, error } = await supabase.rpc('add_admin_by_email', {
+        admin_email: newAdminEmail.toLowerCase()
+      });
+
+      if (error) throw error;
+
+      const result = data as { success: boolean; error?: string; message?: string };
+
+      if (!result.success) {
+        toast.error(result.error || "Failed to add admin");
         return;
       }
 
-      // Check if already an admin
-      const { data: existingAdmin } = await supabase
-        .from("user_roles")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-
-      if (existingAdmin) {
-        toast.error("This user is already an admin");
-        return;
-      }
-
-      // Add admin role
-      const { error: insertError } = await supabase
-        .from("user_roles")
-        .insert({
-          user_id: user.id,
-          role: "admin",
-          is_root: false
-        });
-
-      if (insertError) throw insertError;
-
-      toast.success("Admin added successfully");
+      toast.success(result.message || "Admin added successfully");
       setDialogOpen(false);
       setNewAdminEmail("");
       fetchAdmins();
