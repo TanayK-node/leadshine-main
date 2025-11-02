@@ -81,6 +81,17 @@ const ShopAllProducts = () => {
     fetchProducts();
   }, [toast]);
 
+  // Update filters when URL params change
+  useEffect(() => {
+    const search = searchParams.get("search") || "";
+    const age = searchParams.get("age") || "all";
+    const price = searchParams.get("price") || "all";
+    
+    setSearchTerm(search);
+    setFilterAge(age);
+    setPriceFilter(price);
+  }, [searchParams]);
+
   useEffect(() => {
     let filtered = products;
 

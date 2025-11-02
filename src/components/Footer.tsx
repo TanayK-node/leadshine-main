@@ -13,7 +13,7 @@ const Footer = () => {
             <div className="flex items-center space-x-2">
               <div className="bg-gradient-primary rounded-xl p-2">
                 <span className="text-primary-foreground font-display font-bold text-xl">
-                  ToyVerse
+                  Leadshine
                 </span>
               </div>
             </div>
@@ -75,7 +75,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-primary" />
-                <span className="text-background/80">wholesale@toyverse.com</span>
+                <span className="text-background/80">contact@leadshine.com</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="h-4 w-4 text-primary" />
@@ -105,20 +105,17 @@ const Footer = () => {
         <div className="pt-8 border-t border-background/20">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-background/60 text-sm">
-              © 2024 ToyVerse Wholesale. All rights reserved.
+              © 2024 Leadshine. All rights reserved.
             </div>
             <div className="flex space-x-6 text-sm">
-              <a href="#" className="text-background/60 hover:text-background transition-colors">
+              <a href="/privacy-policy" className="text-background/60 hover:text-background transition-colors">
                 Privacy Policy
               </a>
-              <a href="#" className="text-background/60 hover:text-background transition-colors">
+              <a href="/terms-of-service" className="text-background/60 hover:text-background transition-colors">
                 Terms of Service
               </a>
-              <a href="#" className="text-background/60 hover:text-background transition-colors">
-                Shipping Policy
-              </a>
-              <a href="#" className="text-background/60 hover:text-background transition-colors">
-                Return Policy
+              <a href="/refund-policy" className="text-background/60 hover:text-background transition-colors">
+                Refund Policy
               </a>
             </div>
           </div>
