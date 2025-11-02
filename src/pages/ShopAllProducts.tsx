@@ -289,9 +289,27 @@ const ShopAllProducts = () => {
                     </p>
                   )}
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-primary">
-                      ₹{product["MRP (INR)"]}
-                    </span>
+                    <div className="flex flex-col">
+                      {product.discount_price ? (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg font-bold text-primary">
+                              ₹{product.discount_price}
+                            </span>
+                            <Badge variant="destructive" className="text-xs">
+                              {Math.round((1 - product.discount_price / product["MRP (INR)"]) * 100)}% OFF
+                            </Badge>
+                          </div>
+                          <span className="text-sm text-muted-foreground line-through">
+                            ₹{product["MRP (INR)"]}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-lg font-bold text-primary">
+                          ₹{product["MRP (INR)"]}
+                        </span>
+                      )}
+                    </div>
                     <span className="text-sm text-muted-foreground">
                       Stock: {product.QTY}
                     </span>

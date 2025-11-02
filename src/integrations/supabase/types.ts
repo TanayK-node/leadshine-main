@@ -236,6 +236,7 @@ export type Database = {
           discount_amount: number | null
           id: string
           order_number: string
+          shipping_amount: number | null
           status: string
           total_amount: number
           updated_at: string
@@ -247,6 +248,7 @@ export type Database = {
           discount_amount?: number | null
           id?: string
           order_number: string
+          shipping_amount?: number | null
           status?: string
           total_amount: number
           updated_at?: string
@@ -258,6 +260,7 @@ export type Database = {
           discount_amount?: number | null
           id?: string
           order_number?: string
+          shipping_amount?: number | null
           status?: string
           total_amount?: number
           updated_at?: string
@@ -349,6 +352,7 @@ export type Database = {
           classification_id: string | null
           created_at: string | null
           description: string | null
+          discount_price: number | null
           "Elec/ Non Elec": string | null
           "Funskool Code": string | null
           id: string
@@ -372,6 +376,7 @@ export type Database = {
           classification_id?: string | null
           created_at?: string | null
           description?: string | null
+          discount_price?: number | null
           "Elec/ Non Elec"?: string | null
           "Funskool Code"?: string | null
           id?: string
@@ -395,6 +400,7 @@ export type Database = {
           classification_id?: string | null
           created_at?: string | null
           description?: string | null
+          discount_price?: number | null
           "Elec/ Non Elec"?: string | null
           "Funskool Code"?: string | null
           id?: string

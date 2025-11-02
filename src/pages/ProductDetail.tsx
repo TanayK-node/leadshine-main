@@ -256,9 +256,25 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex flex-wrap items-center gap-3 md:gap-4">
-              <span className="text-2xl md:text-3xl font-bold text-primary">
-                ₹{product["MRP (INR)"]}
-              </span>
+              {product.discount_price ? (
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl md:text-3xl font-bold text-primary">
+                      ₹{product.discount_price}
+                    </span>
+                    <Badge variant="destructive" className="text-sm">
+                      {Math.round((1 - product.discount_price / product["MRP (INR)"]) * 100)}% OFF
+                    </Badge>
+                  </div>
+                  <span className="text-lg text-muted-foreground line-through">
+                    ₹{product["MRP (INR)"]}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-2xl md:text-3xl font-bold text-primary">
+                  ₹{product["MRP (INR)"]}
+                </span>
+              )}
               <Badge variant={product.QTY && product.QTY > 0 ? "default" : "destructive"}>
                 {product.QTY && product.QTY > 0 ? `${product.QTY} in stock` : "Out of stock"}
               </Badge>

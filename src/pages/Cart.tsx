@@ -24,7 +24,8 @@ const Cart = () => {
   }, [navigate]);
 
   const subtotal = cartItems.reduce((sum, item) => {
-    const price = item.products?.["MRP (INR)"] || 0;
+    const product = item.products;
+    const price = product?.discount_price || product?.["MRP (INR)"] || 0;
     return sum + (price * item.quantity);
   }, 0);
   
@@ -102,20 +103,31 @@ const Cart = () => {
                         </div>
                       )}
                       
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-foreground text-sm md:text-base">
-                          {product["Brand Desc"]} {product.SubBrand}
-                        </h3>
-                        <p className="text-xs md:text-sm text-muted-foreground truncate">
-                          {product["Super Category Description"]}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          SKU: {product["Funskool Code"]}
-                        </p>
-                        <p className="text-base md:text-lg font-bold text-primary mt-1 md:mt-2">
-                          ₹{product["MRP (INR)"]}
-                        </p>
-                      </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-foreground text-sm md:text-base">
+                            {product["Brand Desc"]} {product.SubBrand}
+                          </h3>
+                          <p className="text-xs md:text-sm text-muted-foreground truncate">
+                            {product["Super Category Description"]}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            SKU: {product["Funskool Code"]}
+                          </p>
+                          {product.discount_price ? (
+                            <div className="flex items-center gap-2 mt-1 md:mt-2">
+                              <span className="text-base md:text-lg font-bold text-primary">
+                                ₹{product.discount_price}
+                              </span>
+                              <span className="text-sm text-muted-foreground line-through">
+                                ₹{product["MRP (INR)"]}
+                              </span>
+                            </div>
+                          ) : (
+                            <p className="text-base md:text-lg font-bold text-primary mt-1 md:mt-2">
+                              ₹{product["MRP (INR)"]}
+                            </p>
+                          )}
+                        </div>
 
                       <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3">
                         <div className="flex items-center gap-2">
@@ -142,7 +154,7 @@ const Cart = () => {
 
                         <div className="text-right">
                           <p className="font-bold text-base md:text-lg">
-                            ₹{product["MRP (INR)"] * item.quantity}
+                            ₹{(product.discount_price || product["MRP (INR)"]) * item.quantity}
                           </p>
                           <Button
                             variant="ghost"

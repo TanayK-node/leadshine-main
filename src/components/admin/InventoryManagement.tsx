@@ -252,6 +252,7 @@ export const InventoryManagement = () => {
                 <TableHead>Stock</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>MRP</TableHead>
+                <TableHead>Discount Price</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -279,6 +280,33 @@ export const InventoryManagement = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>₹{product["MRP (INR)"]?.toLocaleString()}</TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="Discounted"
+                        value={product.discount_price || ''}
+                        onChange={(e) => {
+                          const value = e.target.value ? parseFloat(e.target.value) : null;
+                          supabase
+                            .from('products')
+                            .update({ discount_price: value })
+                            .eq('id', product.id)
+                            .then(({ error }) => {
+                              if (error) {
+                                toast({
+                                  title: "Error",
+                                  description: "Failed to update discount price",
+                                  variant: "destructive",
+                                });
+                              } else {
+                                fetchProducts();
+                              }
+                            });
+                        }}
+                        className="w-28"
+                      />
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <EditProductDialog product={product} onProductUpdated={fetchProducts} />

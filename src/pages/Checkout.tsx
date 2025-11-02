@@ -71,7 +71,8 @@ const Checkout = () => {
   }, [navigate, toast]);
 
   const subtotal = cartItems.reduce((sum, item) => {
-    const price = item.products?.["MRP (INR)"] || 0;
+    const product = item.products;
+    const price = product?.discount_price || product?.["MRP (INR)"] || 0;
     return sum + (price * item.quantity);
   }, 0);
   
@@ -210,6 +211,7 @@ const Checkout = () => {
           user_id: user.id,
           order_number: orderNumber,
           total_amount: total,
+          shipping_amount: shipping,
           status: 'pending',
           coupon_id: appliedCoupon?.id || null,
           discount_amount: discount
@@ -220,12 +222,16 @@ const Checkout = () => {
       if (orderError) throw orderError;
 
       // Create order items
-      const orderItems = cartItems.map(item => ({
-        order_id: order.id,
-        product_id: item.product_id,
-        quantity: item.quantity,
-        price: item.products?.["MRP (INR)"] || 0,
-      }));
+      const orderItems = cartItems.map(item => {
+        const product = item.products;
+        const price = product?.discount_price || product?.["MRP (INR)"] || 0;
+        return {
+          order_id: order.id,
+          product_id: item.product_id,
+          quantity: item.quantity,
+          price: price,
+        };
+      });
 
       const { error: itemsError } = await supabase
         .from('order_items')
@@ -463,9 +469,10 @@ const Checkout = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
-                    {cartItems.map((item) => {
+                     {cartItems.map((item) => {
                       const product = item.products;
                       if (!product) return null;
+                      const price = product.discount_price || product["MRP (INR)"];
 
                       return (
                         <div key={item.id} className="flex justify-between text-sm">
@@ -474,7 +481,7 @@ const Checkout = () => {
                             <p className="text-muted-foreground">Qty: {item.quantity}</p>
                           </div>
                           <p className="font-medium">
-                            ₹{(product["MRP (INR)"] * item.quantity).toFixed(2)}
+                            ₹{(price * item.quantity).toFixed(2)}
                           </p>
                         </div>
                       );

@@ -26,8 +26,13 @@ interface Order {
   order_number: string;
   status: string;
   total_amount: number;
+  shipping_amount: number;
+  discount_amount: number;
   created_at: string;
   order_items: OrderItem[];
+  coupons: {
+    code: string;
+  } | null;
 }
 
 const Orders = () => {
@@ -72,6 +77,9 @@ const Orders = () => {
               "Brand Desc",
               "Funskool Code"
             )
+          ),
+          coupons (
+            code
           )
         `)
         .eq('user_id', userId)
@@ -229,10 +237,29 @@ const Orders = () => {
 
                     <Separator />
 
-                    {/* Order Total */}
-                    <div className="flex justify-between items-center font-bold text-lg">
-                      <span>Total Amount</span>
-                      <span>₹{order.total_amount.toFixed(2)}</span>
+                    {/* Pricing Breakdown */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Subtotal</span>
+                        <span>₹{(order.total_amount - order.shipping_amount + (order.discount_amount || 0)).toFixed(2)}</span>
+                      </div>
+                      {order.shipping_amount > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Shipping</span>
+                          <span>₹{order.shipping_amount.toFixed(2)}</span>
+                        </div>
+                      )}
+                      {order.discount_amount > 0 && (
+                        <div className="flex justify-between text-sm text-green-600">
+                          <span>Discount {order.coupons ? `(${order.coupons.code})` : ''}</span>
+                          <span>-₹{order.discount_amount.toFixed(2)}</span>
+                        </div>
+                      )}
+                      <Separator />
+                      <div className="flex justify-between items-center font-bold text-lg">
+                        <span>Total Amount</span>
+                        <span>₹{order.total_amount.toFixed(2)}</span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
