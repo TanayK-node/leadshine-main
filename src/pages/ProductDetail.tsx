@@ -26,6 +26,7 @@ const ProductDetail = () => {
   const [productImages, setProductImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [videoUrl, setVideoUrl] = useState<string>("");
+  const [mediaItems, setMediaItems] = useState<Array<{ type: 'image' | 'video', url: string }>>([]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -49,9 +50,15 @@ const ProductDetail = () => {
           .eq('product_id', id)
           .order('display_order');
         
-        if (images && images.length > 0) {
-          setProductImages(images.map(img => img.image_url));
+        const imageUrls = images && images.length > 0 ? images.map(img => img.image_url) : [];
+        setProductImages(imageUrls);
+
+        // Combine images and video into media items
+        const items: Array<{ type: 'image' | 'video', url: string }> = imageUrls.map(url => ({ type: 'image' as const, url }));
+        if (data.video_url) {
+          items.push({ type: 'video' as const, url: data.video_url });
         }
+        setMediaItems(items);
       } catch (error) {
         console.error('Error fetching product:', error);
         toast({
@@ -179,22 +186,30 @@ const ProductDetail = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-8">
-          {/* Product Image */}
+          {/* Product Media Carousel */}
           <div className="space-y-3 md:space-y-4">
             <div className="aspect-square bg-muted rounded-lg overflow-hidden flex items-center justify-center">
-              {productImages.length > 0 ? (
-                <img 
-                  src={productImages[currentImageIndex]} 
-                  alt={product["Material Desc"] || "Product"} 
-                  className="w-full h-full object-cover"
-                />
+              {mediaItems.length > 0 ? (
+                mediaItems[currentImageIndex].type === 'image' ? (
+                  <img 
+                    src={mediaItems[currentImageIndex].url} 
+                    alt={product["Material Desc"] || "Product"} 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <video 
+                    src={mediaItems[currentImageIndex].url} 
+                    controls 
+                    className="w-full h-full object-cover"
+                  />
+                )
               ) : (
                 <Package className="h-16 md:h-24 w-16 md:w-24 text-muted-foreground" />
               )}
             </div>
-            {productImages.length > 1 && (
+            {mediaItems.length > 1 && (
               <div className="grid grid-cols-4 gap-2">
-                {productImages.map((img, index) => (
+                {mediaItems.map((item, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
@@ -202,19 +217,15 @@ const ProductDetail = () => {
                       index === currentImageIndex ? 'border-primary' : 'border-muted'
                     }`}
                   >
-                    <img src={img} alt={`Product ${index + 1}`} className="w-full h-full object-cover" />
+                    {item.type === 'image' ? (
+                      <img src={item.url} alt={`Product ${index + 1}`} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-muted">
+                        <Package className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                    )}
                   </button>
                 ))}
-              </div>
-            )}
-            {videoUrl && (
-              <div className="mt-4">
-                <h3 className="text-sm font-medium mb-2">Product Video</h3>
-                <video 
-                  src={videoUrl} 
-                  controls 
-                  className="w-full rounded-lg"
-                />
               </div>
             )}
           </div>
