@@ -260,6 +260,11 @@ const ShopAllProducts = () => {
                   <Badge className="absolute top-2 right-2 bg-accent">
                     {product["Elec/ Non Elec"]}
                   </Badge>
+                  {product.QTY && product.QTY <= 3 && product.QTY > 0 && (
+                    <Badge className="absolute top-12 right-2 bg-orange-500 text-white">
+                      Low in Stock
+                    </Badge>
+                  )}
                   <div className="absolute top-2 left-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button 
                       size="sm" 
@@ -310,9 +315,6 @@ const ShopAllProducts = () => {
                         </span>
                       )}
                     </div>
-                    <span className="text-sm text-muted-foreground">
-                      Stock: {product.QTY}
-                    </span>
                   </div>
                   <Button 
                     className="w-full mt-3" 
@@ -361,8 +363,26 @@ const ShopAllProducts = () => {
                     </div>
                     
                     <div className="text-right">
-                      <p className="text-lg font-bold text-primary">₹{product["MRP (INR)"]}</p>
-                      <p className="text-sm text-muted-foreground">Stock: {product.QTY}</p>
+                      <div className="flex flex-col items-end mb-2">
+                        {product.discount_price ? (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg font-bold text-primary">₹{product.discount_price}</span>
+                              <Badge variant="destructive" className="text-xs">
+                                {Math.round((1 - product.discount_price / product["MRP (INR)"]) * 100)}% OFF
+                              </Badge>
+                            </div>
+                            <span className="text-sm text-muted-foreground line-through">₹{product["MRP (INR)"]}</span>
+                          </>
+                        ) : (
+                          <p className="text-lg font-bold text-primary">₹{product["MRP (INR)"]}</p>
+                        )}
+                        {product.QTY && product.QTY <= 3 && product.QTY > 0 && (
+                          <Badge className="bg-orange-500 text-white text-xs mt-1">
+                            Low in Stock
+                          </Badge>
+                        )}
+                      </div>
                       <div className="flex gap-2 mt-2">
                         <Button 
                           size="sm"

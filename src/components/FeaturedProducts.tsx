@@ -92,6 +92,11 @@ const FeaturedProducts = () => {
                   <Badge className="absolute top-3 left-3 bg-primary text-white">
                     Featured
                   </Badge>
+                  {product.QTY && product.QTY <= 3 && product.QTY > 0 && (
+                    <Badge className="absolute top-3 right-3 bg-orange-500 text-white">
+                      Low in Stock
+                    </Badge>
+                  )}
                   
                   {/* Quick actions */}
                   <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
