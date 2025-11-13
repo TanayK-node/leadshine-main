@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ShoppingCart, Heart, Share2, Package, Truck, Shield } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Heart, Share2, Package, Truck, Shield, ZoomIn, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,6 +31,8 @@ const ProductDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [videoUrl, setVideoUrl] = useState<string>("");
   const [mediaItems, setMediaItems] = useState<Array<{ type: 'image' | 'video', url: string }>>([]);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const [zoomScale, setZoomScale] = useState(1);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -192,43 +196,73 @@ const ProductDetail = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-8">
           {/* Product Media Carousel */}
-          <div className="space-y-3 md:space-y-4">
-            <div className="aspect-square bg-muted rounded-lg overflow-hidden flex items-center justify-center">
-              {mediaItems.length > 0 ? (
-                mediaItems[currentImageIndex].type === 'image' ? (
-                  <img 
-                    src={mediaItems[currentImageIndex].url} 
-                    alt={product["Material Desc"] || "Product"} 
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <video 
-                    src={mediaItems[currentImageIndex].url} 
-                    controls 
-                    className="w-full h-full object-cover"
-                  />
-                )
-              ) : (
-                <Package className="h-16 md:h-24 w-16 md:w-24 text-muted-foreground" />
+          <div className="space-y-3 md:space-y-4 lg:sticky lg:top-4 lg:self-start">
+            <div className="relative group">
+              <div className="max-w-md mx-auto bg-white rounded-lg overflow-hidden border border-border">
+                <div className="aspect-square flex items-center justify-center p-4">
+                  {mediaItems.length > 0 ? (
+                    mediaItems[currentImageIndex].type === 'image' ? (
+                      <img 
+                        src={mediaItems[currentImageIndex].url} 
+                        alt={product["Material Desc"] || "Product"} 
+                        className="max-w-full max-h-full object-contain cursor-pointer"
+                        onClick={() => setZoomOpen(true)}
+                      />
+                    ) : (
+                      <video 
+                        src={mediaItems[currentImageIndex].url} 
+                        controls 
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    )
+                  ) : (
+                    <Package className="h-16 md:h-24 w-16 md:w-24 text-muted-foreground" />
+                  )}
+                </div>
+              </div>
+              {mediaItems[currentImageIndex]?.type === 'image' && (
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => setZoomOpen(true)}
+                >
+                  <ZoomIn className="h-4 w-4" />
+                </Button>
               )}
             </div>
+            
+            {/* Carousel Thumbnails */}
             {mediaItems.length > 1 && (
-              <div className="grid grid-cols-4 gap-2">
-                {mediaItems.map((item, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentImageIndex(index)}
-                    className={`aspect-square rounded border-2 overflow-hidden relative ${
-                      index === currentImageIndex ? 'border-primary' : 'border-muted'
-                    }`}
-                  >
-                    {item.type === 'image' ? (
-                      <img src={item.url} alt={`Product ${index + 1}`} className="w-full h-full object-cover" />
-                    ) : (
-                      <video src={item.url} className="w-full h-full object-cover" />
-                    )}
-                  </button>
-                ))}
+              <div className="max-w-md mx-auto px-8">
+                <Carousel>
+                  <CarouselContent>
+                    {mediaItems.map((item, index) => (
+                      <CarouselItem key={index} className="basis-1/4">
+                        <button
+                          onClick={() => setCurrentImageIndex(index)}
+                          className={`aspect-square rounded-lg border-2 overflow-hidden relative bg-white p-1 transition-all ${
+                            index === currentImageIndex ? 'border-primary shadow-md' : 'border-muted hover:border-border'
+                          }`}
+                        >
+                          {item.type === 'image' ? (
+                            <img src={item.url} alt={`Product ${index + 1}`} className="w-full h-full object-contain" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-muted">
+                              <Package className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                          )}
+                        </button>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  {mediaItems.length > 4 && (
+                    <>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </>
+                  )}
+                </Carousel>
               </div>
             )}
           </div>
@@ -454,7 +488,89 @@ const ProductDetail = () => {
           </TabsContent>
         </Tabs>
       </main>
+      
+      {/* Zoom Dialog */}
+      <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95">
+          <div className="relative w-full h-[95vh] flex items-center justify-center overflow-hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 z-10 text-white hover:bg-white/20"
+              onClick={() => setZoomOpen(false)}
+            >
+              <X className="h-6 w-6" />
+            </Button>
+            
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2 bg-black/50 rounded-lg p-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20"
+                onClick={() => setZoomScale(Math.max(0.5, zoomScale - 0.25))}
+              >
+                Zoom Out
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20"
+                onClick={() => setZoomScale(1)}
+              >
+                Reset
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20"
+                onClick={() => setZoomScale(Math.min(3, zoomScale + 0.25))}
+              >
+                Zoom In
+              </Button>
+            </div>
 
+            <div className="w-full h-full flex items-center justify-center p-8 overflow-auto">
+              {mediaItems.length > 0 && mediaItems[currentImageIndex]?.type === 'image' && (
+                <img
+                  src={mediaItems[currentImageIndex].url}
+                  alt={product["Material Desc"] || "Product"}
+                  className="max-w-full max-h-full object-contain transition-transform duration-200"
+                  style={{ transform: `scale(${zoomScale})` }}
+                />
+              )}
+            </div>
+
+            {/* Navigation arrows for zoom view */}
+            {mediaItems.length > 1 && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/20"
+                  onClick={() => {
+                    setCurrentImageIndex((prev) => (prev === 0 ? mediaItems.length - 1 : prev - 1));
+                    setZoomScale(1);
+                  }}
+                >
+                  <ArrowLeft className="h-6 w-6" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/20"
+                  onClick={() => {
+                    setCurrentImageIndex((prev) => (prev === mediaItems.length - 1 ? 0 : prev + 1));
+                    setZoomScale(1);
+                  }}
+                >
+                  <Share2 className="h-6 w-6 rotate-180" />
+                </Button>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+      
       <Footer />
     </div>
   );
