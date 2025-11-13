@@ -2,65 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Kids toy wholesaler design system - soft pastels and playful colors */
+/* Vibrant Candy Shop Theme - Bright Purples, Hot Pinks, and Sunshine Yellows */
 
 @layer base {
   :root {
-    /* Professional blue and gold palette */
-    --background: 210 15% 98%;
-    --foreground: 200 65% 15%;
+    /* Light, playful background */
+    --background: 280 40% 98%;
+    --foreground: 280 30% 20%;
 
-    /* Card colors with blue tints */
+    /* Card colors with soft white */
     --card: 0 0% 100%;
-    --card-foreground: 200 65% 15%;
+    --card-foreground: 280 30% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 200 65% 15%;
+    --popover-foreground: 280 30% 20%;
 
-    /* Primary brand - deep blue #0f5070 */
-    --primary: 200 65% 25%;
+    /* Primary - Bright Purple */
+    --primary: 280 75% 55%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 200 45% 45%;
-    --primary-glow: 200 55% 35%;
+    --primary-light: 280 65% 65%;
+    --primary-glow: 280 85% 70%;
 
-    /* Secondary - warm gold #e8c283 */
-    --secondary: 45 65% 70%;
-    --secondary-foreground: 200 65% 15%;
-    --secondary-light: 45 55% 85%;
+    /* Secondary - Sunshine Yellow */
+    --secondary: 45 95% 60%;
+    --secondary-foreground: 280 30% 20%;
+    --secondary-light: 45 85% 70%;
 
-    /* Accent - complementary gold tones */
-    --accent: 45 65% 70%;
-    --accent-foreground: 200 65% 15%;
-    --accent-light: 45 55% 85%;
+    /* Accent - Hot Pink */
+    --accent: 330 85% 60%;
+    --accent-foreground: 0 0% 100%;
+    --accent-light: 330 75% 70%;
 
-    /* Additional themed colors */
-    --toy-pink: 45 45% 75%;
-    --toy-blue: 200 45% 65%;
-    --toy-yellow: 45 75% 75%;
+    /* Vibrant toy colors */
+    --toy-pink: 330 85% 65%;
+    --toy-blue: 200 80% 60%;
+    --toy-yellow: 45 95% 65%;
 
-    /* Muted tones with blue undertones */
-    --muted: 210 15% 92%;
-    --muted-foreground: 200 25% 45%;
+    /* Soft muted tones */
+    --muted: 280 20% 94%;
+    --muted-foreground: 280 20% 50%;
 
-    --destructive: 0 65% 70%;
+    --destructive: 0 85% 65%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 20% 88%;
-    --input: 210 20% 88%;
-    --ring: 200 65% 25%;
+    --border: 280 20% 90%;
+    --input: 280 20% 90%;
+    --ring: 280 75% 55%;
 
-    /* Professional gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary-light)), hsl(var(--secondary-light)), hsl(var(--accent-light)));
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted)));
+    /* Vibrant gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(280 75% 55%), hsl(330 85% 60%));
+    --gradient-hero: radial-gradient(circle at 30% 50%, hsl(280 75% 65%), hsl(330 85% 65%), hsl(45 95% 70%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(280 20% 97%));
+    --gradient-mesh: radial-gradient(at 40% 20%, hsl(280 75% 75%) 0px, transparent 50%), radial-gradient(at 80% 0%, hsl(330 85% 70%) 0px, transparent 50%), radial-gradient(at 0% 50%, hsl(45 95% 70%) 0px, transparent 50%);
 
-    /* Elegant shadows */
-    --shadow-soft: 0 8px 25px -5px hsl(var(--primary) / 0.15);
-    --shadow-card: 0 4px 15px -3px hsl(var(--primary) / 0.12);
-    --shadow-glow: 0 0 30px hsl(var(--secondary) / 0.25);
+    /* Playful shadows with color */
+    --shadow-soft: 0 10px 30px -5px hsl(280 75% 55% / 0.25);
+    --shadow-card: 0 8px 20px -3px hsl(280 75% 55% / 0.2);
+    --shadow-glow: 0 0 40px hsl(330 85% 60% / 0.35);
+    --shadow-sticker: 8px 8px 0px hsl(280 75% 55%), 12px 12px 0px hsl(330 85% 60%);
 
-    /* Playful border radius */
-    --radius: 1rem;
+    /* Super round borders */
+    --radius: 2rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -80,42 +82,42 @@
   }
 
   .dark {
-    /* Dark mode with blue and gold theme */
-    --background: 200 25% 8%;
-    --foreground: 45 30% 90%;
+    /* Dark mode with vibrant candy colors */
+    --background: 280 30% 12%;
+    --foreground: 280 20% 90%;
 
-    --card: 200 20% 12%;
-    --card-foreground: 45 30% 90%;
+    --card: 280 25% 16%;
+    --card-foreground: 280 20% 90%;
 
-    --popover: 200 20% 12%;
-    --popover-foreground: 45 30% 90%;
+    --popover: 280 25% 16%;
+    --popover-foreground: 280 20% 90%;
 
-    --primary: 200 65% 35%;
+    --primary: 280 70% 60%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 200 45% 55%;
-    --primary-glow: 200 55% 45%;
+    --primary-light: 280 60% 70%;
+    --primary-glow: 280 80% 75%;
 
-    --secondary: 45 65% 60%;
-    --secondary-foreground: 200 25% 8%;
-    --secondary-light: 45 45% 75%;
+    --secondary: 45 90% 65%;
+    --secondary-foreground: 280 30% 12%;
+    --secondary-light: 45 80% 75%;
 
-    --accent: 45 65% 60%;
-    --accent-foreground: 200 25% 8%;
-    --accent-light: 45 45% 75%;
+    --accent: 330 80% 65%;
+    --accent-foreground: 0 0% 100%;
+    --accent-light: 330 70% 75%;
 
-    --toy-pink: 45 35% 65%;
-    --toy-blue: 200 50% 60%;
-    --toy-yellow: 45 65% 65%;
+    --toy-pink: 330 80% 70%;
+    --toy-blue: 200 75% 65%;
+    --toy-yellow: 45 90% 70%;
 
-    --muted: 200 15% 18%;
-    --muted-foreground: 200 15% 65%;
+    --muted: 280 20% 22%;
+    --muted-foreground: 280 15% 65%;
 
-    --destructive: 0 65% 60%;
-    --destructive-foreground: 45 30% 90%;
+    --destructive: 0 80% 70%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 200 20% 25%;
-    --input: 200 20% 25%;
-    --ring: 200 65% 35%;
+    --border: 280 25% 30%;
+    --input: 280 25% 30%;
+    --ring: 280 70% 60%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -167,8 +169,12 @@
   .bg-gradient-card {
     background: var(--gradient-card);
   }
+
+  .bg-gradient-mesh {
+    background: var(--gradient-mesh);
+  }
   
-  /* Soft shadows */
+  /* Playful shadows */
   .shadow-soft {
     box-shadow: var(--shadow-soft);
   }
@@ -179,6 +185,10 @@
   
   .shadow-glow {
     box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-sticker {
+    box-shadow: var(--shadow-sticker);
   }
   
   /* Toy color utilities */
@@ -194,12 +204,20 @@
     background-color: hsl(var(--toy-yellow));
   }
   
-  /* Hover animations */
+  /* Playful hover animations */
   .hover-lift {
     @apply transition-all duration-300 hover:transform hover:scale-105 hover:shadow-glow;
   }
   
   .hover-bounce {
     @apply transition-transform duration-200 hover:transform hover:-translate-y-1;
+  }
+
+  .hover-wiggle {
+    @apply hover:animate-wiggle;
+  }
+
+  .hover-pop {
+    @apply hover:animate-pop;
   }
 }
