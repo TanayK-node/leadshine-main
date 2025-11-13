@@ -140,18 +140,18 @@ const Header = () => {
             </a>
           </div>
 
-          {/* Search bar - Pill shaped */}
+          {/* Search bar */}
           <div className="hidden md:flex flex-1 max-w-2xl mx-4">
             <Popover open={searchOpen} onOpenChange={setSearchOpen}>
               <PopoverTrigger asChild>
                 <div className="relative w-full cursor-pointer">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary h-5 w-5 pointer-events-none" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 pointer-events-none" />
                   <Input
-                    placeholder="Search for awesome toys! 🎈"
-                    className="pl-12 pr-12 bg-background border-2 border-primary/30 focus:border-primary rounded-full h-12 cursor-pointer font-display shadow-card hover:shadow-glow transition-all"
+                    placeholder="Search toys, games, and more..."
+                    className="pl-10 pr-10 bg-muted/50 border-muted focus:bg-background cursor-pointer"
                     readOnly
                   />
-                  <Filter className="absolute right-4 top-1/2 transform -translate-y-1/2 text-accent h-5 w-5 pointer-events-none" />
+                  <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 pointer-events-none" />
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-[400px] p-4" align="start">
@@ -221,21 +221,21 @@ const Header = () => {
                 >
                   Orders
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => navigate('/profile')} className="hover-pop rounded-full">
-                  <User className="h-5 w-5 fill-primary text-primary" />
+                <Button variant="ghost" size="icon" onClick={() => navigate('/profile')}>
+                  <User className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="relative hover-pop rounded-full" onClick={() => navigate('/wishlist')}>
-                  <Heart className="h-5 w-5 fill-accent text-accent" />
+                <Button variant="ghost" size="icon" className="relative" onClick={() => navigate('/wishlist')}>
+                  <Heart className="h-5 w-5" />
                   {wishlistItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold shadow-glow">
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground rounded-full text-xs w-5 h-5 flex items-center justify-center">
                       {wishlistItems.length}
                     </span>
                   )}
                 </Button>
-                <Button variant="ghost" size="icon" className="relative hover-pop rounded-full" onClick={() => navigate('/cart')}>
-                  <ShoppingCart className="h-5 w-5 fill-primary text-primary" />
+                <Button variant="ghost" size="icon" className="relative" onClick={() => navigate('/cart')}>
+                  <ShoppingCart className="h-5 w-5" />
                   {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold shadow-glow">
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground rounded-full text-xs w-5 h-5 flex items-center justify-center">
                       {cartCount}
                     </span>
                   )}
