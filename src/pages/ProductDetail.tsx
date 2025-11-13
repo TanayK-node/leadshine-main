@@ -315,8 +315,10 @@ const ProductDetail = () => {
                   ₹{product["MRP (INR)"]}
                 </span>
               )}
-              <Badge variant={product.QTY && product.QTY > 0 ? "default" : "destructive"}>
-                {product.QTY && product.QTY > 0 ? `${product.QTY} in stock` : "Out of stock"}
+              <Badge variant={product.QTY && product.QTY > 0 ? (product.QTY <= 3 ? "destructive" : "default") : "destructive"}>
+                {product.QTY && product.QTY > 0 
+                  ? (product.QTY <= 3 ? "Low in Stock" : "In Stock") 
+                  : "Out of Stock"}
               </Badge>
             </div>
 
