@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Filter, Palette, ShoppingCart } from "lucide-react";
+import { Search, Filter, Palette, ShoppingCart, Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -124,57 +124,91 @@ const ArtAndCrafts = () => {
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-12">No products found</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {filteredProducts.map((product) => (
-              <Card key={product.id} className="group hover:shadow-lg transition-shadow">
-                <CardContent className="p-0">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <Link to={`/product/${product.id}`}>
-                      {product.product_images && product.product_images.length > 0 ? (
-                        <img
-                          src={product.product_images[0].image_url}
-                          alt={product["Material Desc"] || "Product"}
-                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
-                        />
-                      ) : (
-                        <div className="w-full h-48 bg-muted flex items-center justify-center">
-                          <span className="text-muted-foreground">No Image</span>
-                        </div>
-                      )}
-                    </Link>
-                    <Badge className="absolute top-2 right-2 bg-accent">ART</Badge>
+              <div 
+                key={product.id} 
+                className="group bg-white rounded-3xl border-4 border-foreground shadow-sticker hover:shadow-glow hover:scale-105 hover:-rotate-1 transition-all duration-300 overflow-hidden"
+              >
+                <div className="relative p-4">
+                  <Link to={`/product/${product.id}`}>
+                    {product.product_images && product.product_images.length > 0 ? (
+                      <img
+                        src={product.product_images[0].image_url}
+                        alt={product["Material Desc"] || "Product"}
+                        className="w-full h-52 object-cover rounded-2xl border-2 border-foreground group-hover:animate-wiggle"
+                      />
+                    ) : (
+                      <div className="w-full h-52 bg-muted rounded-2xl border-2 border-foreground flex items-center justify-center">
+                        <span className="text-muted-foreground font-display">No Image</span>
+                      </div>
+                    )}
+                  </Link>
+                  
+                  {/* Badges */}
+                  <Badge className="absolute top-6 left-6 bg-accent text-accent-foreground font-bold text-xs px-3 py-1 shadow-lg border-2 border-foreground">
+                    🎨 Art
+                  </Badge>
+                  {product.QTY && product.QTY <= 3 && product.QTY > 0 && (
+                    <Badge className="absolute top-6 right-6 bg-secondary text-secondary-foreground font-bold text-xs px-3 py-1 shadow-lg border-2 border-foreground">
+                      🔥 Low Stock
+                    </Badge>
+                  )}
+                  
+                  {/* Quick Wishlist */}
+                  <Button 
+                    size="icon" 
+                    className="absolute top-16 right-6 h-10 w-10 rounded-full bg-accent hover:bg-accent/80 border-2 border-foreground shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Heart className="h-5 w-5 fill-white text-white" />
+                  </Button>
+                </div>
+
+                <div className="px-6 pb-6">
+                  <div className="text-xs font-bold text-muted-foreground mb-1 font-display uppercase">
+                    {product["Brand Desc"]} {product.SubBrand && `• ${product.SubBrand}`}
                   </div>
                   
-                  <div className="p-4">
-                    <Link to={`/product/${product.id}`}>
-                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors cursor-pointer">
-                        {product["Material Desc"]}
-                      </h3>
-                    </Link>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {product["Brand Desc"]} {product.SubBrand && `• ${product.SubBrand}`}
-                    </p>
-                    <p className="text-xs text-muted-foreground mb-2">
-                      SKU: {product["Funskool Code"]}
-                    </p>
-                    {product.age_range && (
-                      <p className="text-xs text-muted-foreground mb-2">Age: {product.age_range}</p>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-primary">
+                  <Link to={`/product/${product.id}`}>
+                    <h3 className="font-display font-bold text-foreground text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                      {product["Material Desc"]}
+                    </h3>
+                  </Link>
+                  
+                  {product.age_range && (
+                    <Badge variant="outline" className="text-xs mb-3 font-display border-2">
+                      Age: {product.age_range}
+                    </Badge>
+                  )}
+                  
+                  {/* Price */}
+                  <div className="flex items-center gap-2 mb-4 flex-wrap">
+                    {product.discount_price ? (
+                      <>
+                        <span className="text-base font-display text-muted-foreground line-through">
+                          ₹{product["MRP (INR)"]}
+                        </span>
+                        <span className="text-2xl font-display font-bold text-primary">
+                          ₹{product.discount_price}
+                        </span>
+                        <Badge className="bg-primary text-primary-foreground font-bold text-xs border-2 border-foreground">
+                          {Math.round((1 - product.discount_price / product["MRP (INR)"]) * 100)}% OFF
+                        </Badge>
+                      </>
+                    ) : (
+                      <span className="text-2xl font-display font-bold text-primary">
                         ₹{product["MRP (INR)"]}
                       </span>
-                      <span className="text-sm text-muted-foreground">
-                        Stock: {product.QTY}
-                      </span>
-                    </div>
-                    <Button className="w-full mt-3" size="sm" onClick={() => handleAddToCart(product.id)}>
-                      <ShoppingCart className="h-4 w-4 mr-2" />
-                      Add to Cart
-                    </Button>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
+
+                  {/* Add to Cart Button */}
+                  <Button className="w-full rounded-full h-12 font-display font-bold text-base shadow-lg hover-pop border-2 border-foreground" onClick={() => handleAddToCart(product.id)}>
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    Add to Cart 🛒
+                  </Button>
+                </div>
+              </div>
             ))}
           </div>
         )}

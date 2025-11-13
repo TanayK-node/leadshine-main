@@ -235,99 +235,98 @@ const ShopAllProducts = () => {
 
         {/* Products Grid */}
         <div className={viewMode === "grid" 
-          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
           : "space-y-4"
         }>
           {filteredProducts.map((product) => (
-            <Card key={product.id} className="group hover:shadow-lg transition-shadow">
-              <CardContent className="p-0">
-                {viewMode === "grid" ? (
-                  <>
-                    <div className="relative overflow-hidden rounded-t-lg">
+            viewMode === "grid" ? (
+              <div 
+                key={product.id} 
+                className="group bg-white rounded-3xl border-4 border-foreground shadow-sticker hover:shadow-glow hover:scale-105 hover:-rotate-1 transition-all duration-300 overflow-hidden"
+              >
+                <div className="relative p-4">
                   <Link to={`/product/${product.id}`}>
                     {product.product_images && product.product_images.length > 0 ? (
-                      <img 
-                        src={product.product_images[0].image_url} 
+                      <img
+                        src={product.product_images[0].image_url}
                         alt={product["Material Desc"] || "Product"}
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+                        className="w-full h-52 object-cover rounded-2xl border-2 border-foreground group-hover:animate-wiggle"
                       />
                     ) : (
-                      <div className="w-full h-48 bg-muted flex items-center justify-center group-hover:scale-105 transition-transform duration-300 cursor-pointer">
-                        <span className="text-muted-foreground">No Image</span>
+                      <div className="w-full h-52 bg-muted rounded-2xl border-2 border-foreground flex items-center justify-center">
+                        <span className="text-muted-foreground font-display">No Image</span>
                       </div>
                     )}
                   </Link>
-                  <Badge className="absolute top-2 right-2 bg-accent">
-                    {product["Elec/ Non Elec"]}
-                  </Badge>
+                  
+                  {/* Badges */}
                   {product.QTY && product.QTY <= 3 && product.QTY > 0 && (
-                    <Badge className="absolute top-12 right-2 bg-orange-500 text-white">
-                      Low in Stock
+                    <Badge className="absolute top-6 right-6 bg-secondary text-secondary-foreground font-bold text-xs px-3 py-1 shadow-lg border-2 border-foreground">
+                      🔥 Low Stock
                     </Badge>
                   )}
-                  <div className="absolute top-2 left-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button 
-                      size="sm" 
-                      variant="secondary" 
-                      className="h-8 w-8 p-0"
-                    >
-                      <Heart className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  
+                  {/* Quick Wishlist */}
+                  <Button 
+                    size="icon" 
+                    className="absolute top-6 left-6 h-10 w-10 rounded-full bg-accent hover:bg-accent/80 border-2 border-foreground shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Heart className="h-5 w-5 fill-white text-white" />
+                  </Button>
                 </div>
-                
-                <div className="p-4">
+
+                <div className="px-6 pb-6">
+                  <div className="text-xs font-bold text-muted-foreground mb-1 font-display uppercase">
+                    {product["Brand Desc"]} {product.SubBrand && `• ${product.SubBrand}`}
+                  </div>
+                  
                   <Link to={`/product/${product.id}`}>
-                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors cursor-pointer">
+                    <h3 className="font-display font-bold text-foreground text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                       {product["Material Desc"]}
                     </h3>
                   </Link>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {product["Brand Desc"]} {product.SubBrand && `• ${product.SubBrand}`}
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    SKU: {product["Funskool Code"]}
-                  </p>
+                  
                   {product.age_range && (
-                    <p className="text-xs text-muted-foreground mb-2">
+                    <Badge variant="outline" className="text-xs mb-3 font-display border-2">
                       Age: {product.age_range}
-                    </p>
+                    </Badge>
                   )}
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col">
-                      {product.discount_price ? (
-                        <>
-                          <div className="flex items-center gap-2">
-                            <span className="text-lg font-bold text-primary">
-                              ₹{product.discount_price}
-                            </span>
-                            <Badge variant="destructive" className="text-xs">
-                              {Math.round((1 - product.discount_price / product["MRP (INR)"]) * 100)}% OFF
-                            </Badge>
-                          </div>
-                          <span className="text-sm text-muted-foreground line-through">
-                            ₹{product["MRP (INR)"]}
-                          </span>
-                        </>
-                      ) : (
-                        <span className="text-lg font-bold text-primary">
+                  
+                  {/* Price */}
+                  <div className="flex items-center gap-2 mb-4 flex-wrap">
+                    {product.discount_price ? (
+                      <>
+                        <span className="text-base font-display text-muted-foreground line-through">
                           ₹{product["MRP (INR)"]}
                         </span>
-                      )}
-                    </div>
+                        <span className="text-2xl font-display font-bold text-primary">
+                          ₹{product.discount_price}
+                        </span>
+                        <Badge className="bg-primary text-primary-foreground font-bold text-xs border-2 border-foreground">
+                          {Math.round((1 - product.discount_price / product["MRP (INR)"]) * 100)}% OFF
+                        </Badge>
+                      </>
+                    ) : (
+                      <span className="text-2xl font-display font-bold text-primary">
+                        ₹{product["MRP (INR)"]}
+                      </span>
+                    )}
                   </div>
+
+                  {/* Add to Cart Button */}
                   <Button 
-                    className="w-full mt-3" 
-                    size="sm"
+                    className="w-full rounded-full h-12 font-display font-bold text-base shadow-lg hover-pop border-2 border-foreground" 
                     onClick={() => handleAddToCart(product.id)}
                     disabled={!product.QTY || product.QTY === 0}
                   >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    {!product.QTY || product.QTY === 0 ? "Out of Stock" : "Add to Cart"}
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    {!product.QTY || product.QTY === 0 ? "Out of Stock 🚫" : "Add to Cart 🛒"}
                   </Button>
-                    </div>
-                  </>
-                ) : (
+                </div>
+              </div>
+            ) : (
+              <Card key={product.id} className="group hover:shadow-lg transition-shadow">
+                <CardContent className="p-0">
                   <div className="flex items-center gap-4 p-4">
                     <Link to={`/product/${product.id}`}>
                       {product.product_images && product.product_images.length > 0 ? (
@@ -401,9 +400,9 @@ const ShopAllProducts = () => {
                       </div>
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )
           ))}
         </div>
 
