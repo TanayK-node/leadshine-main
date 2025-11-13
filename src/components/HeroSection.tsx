@@ -12,7 +12,7 @@ const HeroSection = () => {
           alt="Colorful toys background"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/85 to-background/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-background/40 to-transparent"></div>
       </div>
 
       <div className="container relative z-10 mx-auto px-4 py-20">
@@ -27,46 +27,13 @@ const HeroSection = () => {
 
             {/* Heading */}
             <div className="space-y-6">
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold text-foreground leading-[1.1]">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold text-foreground leading-[1.1] drop-shadow-lg">
                 Bringing Joy to{" "}
                 <span className="text-primary">Every Child</span>
               </h1>
-              <p className="text-xl sm:text-2xl text-muted-foreground leading-relaxed max-w-2xl">
+              <p className="text-xl sm:text-2xl text-foreground leading-relaxed max-w-2xl drop-shadow-md">
                 Premium wholesale toys from trusted brands. Quality, safety, and fun guaranteed for retailers nationwide.
               </p>
-            </div>
-
-            {/* Features grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
-              <div className="flex items-start gap-3 bg-card/80 backdrop-blur-sm rounded-xl p-4 shadow-card border border-border/50">
-                <div className="bg-primary/10 rounded-lg p-2">
-                  <Shield className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <div className="font-semibold text-foreground">100% Safe</div>
-                  <div className="text-sm text-muted-foreground">Certified Quality</div>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3 bg-card/80 backdrop-blur-sm rounded-xl p-4 shadow-card border border-border/50">
-                <div className="bg-primary/10 rounded-lg p-2">
-                  <Package className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <div className="font-semibold text-foreground">Bulk Orders</div>
-                  <div className="text-sm text-muted-foreground">Best Prices</div>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3 bg-card/80 backdrop-blur-sm rounded-xl p-4 shadow-card border border-border/50">
-                <div className="bg-primary/10 rounded-lg p-2">
-                  <Star className="h-5 w-5 text-primary fill-primary" />
-                </div>
-                <div>
-                  <div className="font-semibold text-foreground">500+ Toys</div>
-                  <div className="text-sm text-muted-foreground">Wide Selection</div>
-                </div>
-              </div>
             </div>
 
             {/* CTA Buttons */}
