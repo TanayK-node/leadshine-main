@@ -160,8 +160,8 @@ const FeaturedProducts = () => {
         {/* Bottom CTA */}
         <div className="text-center mt-12">
           <Link to="/shop-all">
-            <Button variant="mint" size="lg">
-              View All Products
+            <Button size="lg" className="rounded-full h-14 px-10 font-display font-bold text-lg shadow-glow hover-pop border-4 border-foreground">
+              View All Products 🚀
             </Button>
           </Link>
         </div>

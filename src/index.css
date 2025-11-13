@@ -54,13 +54,14 @@
     --gradient-hero: linear-gradient(135deg, hsl(var(--primary-light)), hsl(var(--secondary-light)), hsl(var(--accent-light)));
     --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted)));
 
-    /* Elegant shadows */
+    /* Game Card Shadows */
     --shadow-soft: 0 8px 25px -5px hsl(var(--primary) / 0.15);
     --shadow-card: 0 4px 15px -3px hsl(var(--primary) / 0.12);
-    --shadow-glow: 0 0 30px hsl(var(--secondary) / 0.25);
+    --shadow-sticker: 8px 8px 0px 0px hsl(var(--foreground) / 0.15), 4px 4px 0px 0px hsl(var(--foreground) / 0.08);
+    --shadow-glow: 0 0 40px hsl(var(--accent) / 0.4), 0 10px 30px hsl(var(--primary) / 0.2);
 
     /* Playful border radius */
-    --radius: 1rem;
+    --radius: 2rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -168,13 +169,17 @@
     background: var(--gradient-card);
   }
   
-  /* Soft shadows */
+  /* Game Card Shadows */
   .shadow-soft {
     box-shadow: var(--shadow-soft);
   }
   
   .shadow-card {
     box-shadow: var(--shadow-card);
+  }
+
+  .shadow-sticker {
+    box-shadow: var(--shadow-sticker);
   }
   
   .shadow-glow {
@@ -194,12 +199,20 @@
     background-color: hsl(var(--toy-yellow));
   }
   
-  /* Hover animations */
+  /* Game Card Hover Animations */
   .hover-lift {
     @apply transition-all duration-300 hover:transform hover:scale-105 hover:shadow-glow;
   }
   
   .hover-bounce {
     @apply transition-transform duration-200 hover:transform hover:-translate-y-1;
+  }
+
+  .hover-pop {
+    @apply transition-all duration-200 hover:scale-105;
+  }
+
+  .hover-tilt {
+    @apply transition-all duration-300 hover:shadow-glow hover:scale-105 hover:-rotate-1;
   }
 }

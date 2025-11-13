@@ -47,44 +47,44 @@ const CategorySection = () => {
         {/* Categories grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {categories.map((category, index) => (
-            <Card key={index} className="group hover-lift cursor-pointer border-0 shadow-card overflow-hidden">
-              <CardContent className="p-0">
-                <div className="relative">
-                  <img
-                    src={category.image}
-                    alt={`${category.title} - wholesale toys category`}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                  
-                  {/* Category badge */}
-                  <div className={`absolute top-4 left-4 ${category.color} text-foreground px-3 py-1 rounded-full text-sm font-medium`}>
-                    {category.itemCount}
-                  </div>
+            <div 
+              key={index} 
+              className="group bg-white rounded-3xl border-4 border-foreground shadow-sticker hover:shadow-glow hover:scale-105 hover:-rotate-1 transition-all duration-300 overflow-hidden cursor-pointer"
+            >
+              <div className="relative p-4">
+                <img
+                  src={category.image}
+                  alt={`${category.title} - wholesale toys category`}
+                  className="w-full h-64 object-cover rounded-2xl border-2 border-foreground group-hover:animate-wiggle"
+                />
+                
+                {/* Category badge */}
+                <div className={`absolute top-6 left-6 ${category.color} text-foreground px-4 py-2 rounded-full text-sm font-bold border-2 border-foreground shadow-lg`}>
+                  {category.itemCount}
                 </div>
+              </div>
 
-                <div className="p-6">
-                  <h3 className="text-2xl font-display font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                    {category.title}
-                  </h3>
-                  <p className="text-muted-foreground mb-6">
-                    {category.description}
-                  </p>
-                  
-                  <Button variant="ghost" className="group/btn p-0 h-auto font-medium">
-                    Explore Collection
-                    <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+              <div className="px-6 pb-6">
+                <h3 className="text-2xl font-display font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                  {category.title}
+                </h3>
+                <p className="text-muted-foreground mb-6 font-display">
+                  {category.description}
+                </p>
+                
+                <Button className="w-full rounded-full h-12 font-display font-bold text-base shadow-lg hover-pop border-2 border-foreground">
+                  Explore Collection
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </div>
+            </div>
           ))}
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-12">
-          <Button variant="playful" size="lg">
-            View All Categories
+        <div className="text-center mt-16">
+          <Button size="lg" className="rounded-full h-14 px-10 font-display font-bold text-lg shadow-glow hover-pop border-4 border-foreground">
+            View All Categories 🎯
           </Button>
         </div>
       </div>

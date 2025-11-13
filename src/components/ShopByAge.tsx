@@ -57,28 +57,28 @@ const ShopByAge = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {ageGroups.map((group, index) => (
-            <Card 
+            <div 
               key={index} 
-              className={`p-6 text-center cursor-pointer hover:shadow-card transition-all ${group.color}`}
+              className="group bg-white rounded-3xl border-4 border-foreground shadow-sticker hover:shadow-glow hover:scale-105 hover:-rotate-1 transition-all duration-300 p-6 text-center cursor-pointer"
               onClick={() => handleAgeClick(group.range)}
             >
-              <div className="space-y-3">
-                <div className="text-2xl font-display font-bold text-foreground">
+              <div className="space-y-4">
+                <div className="text-3xl font-display font-bold text-primary group-hover:animate-pop">
                   {group.range}
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm font-display font-semibold text-foreground">
                   {group.description}
                 </div>
                 {group.count > 0 && (
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs font-display text-muted-foreground bg-accent/20 rounded-full py-1 px-3 inline-block border-2 border-foreground">
                     {group.count} {group.count === 1 ? 'product' : 'products'}
                   </div>
                 )}
-                <Button variant="ghost" size="sm" className="w-full">
-                  Explore
+                <Button className="w-full rounded-full h-10 font-display font-bold text-sm shadow-lg hover-pop border-2 border-foreground mt-2">
+                  Explore 🎈
                 </Button>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       </div>
