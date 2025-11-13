@@ -231,40 +231,6 @@ const ProductDetail = () => {
                 </Button>
               )}
             </div>
-            
-            {/* Carousel Thumbnails */}
-            {mediaItems.length > 1 && (
-              <div className="max-w-md mx-auto px-8">
-                <Carousel>
-                  <CarouselContent>
-                    {mediaItems.map((item, index) => (
-                      <CarouselItem key={index} className="basis-1/4">
-                        <button
-                          onClick={() => setCurrentImageIndex(index)}
-                          className={`aspect-square rounded-lg border-2 overflow-hidden relative bg-white p-1 transition-all ${
-                            index === currentImageIndex ? 'border-primary shadow-md' : 'border-muted hover:border-border'
-                          }`}
-                        >
-                          {item.type === 'image' ? (
-                            <img src={item.url} alt={`Product ${index + 1}`} className="w-full h-full object-contain" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-muted">
-                              <Package className="h-6 w-6 text-muted-foreground" />
-                            </div>
-                          )}
-                        </button>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  {mediaItems.length > 4 && (
-                    <>
-                      <CarouselPrevious />
-                      <CarouselNext />
-                    </>
-                  )}
-                </Carousel>
-              </div>
-            )}
           </div>
 
           {/* Product Info */}
