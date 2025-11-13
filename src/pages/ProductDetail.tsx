@@ -295,15 +295,20 @@ const ProductDetail = () => {
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 md:gap-4">
+            <div className="flex items-center gap-3 md:gap-4 flex-wrap sm:flex-nowrap">
               {product.discount_price ? (
                 <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-2xl md:text-3xl font-bold text-primary">
                       ₹{product.discount_price}
                     </span>
-                    <Badge variant="destructive" className="text-sm">
+                    <Badge variant="default" className="text-sm bg-primary text-primary-foreground">
                       {Math.round((1 - product.discount_price / product["MRP (INR)"]) * 100)}% OFF
+                    </Badge>
+                    <Badge variant={product.QTY && product.QTY > 0 ? (product.QTY <= 3 ? "destructive" : "secondary") : "destructive"}>
+                      {product.QTY && product.QTY > 0 
+                        ? (product.QTY <= 3 ? "Low in Stock" : "In Stock") 
+                        : "Out of Stock"}
                     </Badge>
                   </div>
                   <span className="text-lg text-muted-foreground line-through">
@@ -311,15 +316,17 @@ const ProductDetail = () => {
                   </span>
                 </div>
               ) : (
-                <span className="text-2xl md:text-3xl font-bold text-primary">
-                  ₹{product["MRP (INR)"]}
-                </span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-2xl md:text-3xl font-bold text-primary">
+                    ₹{product["MRP (INR)"]}
+                  </span>
+                  <Badge variant={product.QTY && product.QTY > 0 ? (product.QTY <= 3 ? "destructive" : "secondary") : "destructive"}>
+                    {product.QTY && product.QTY > 0 
+                      ? (product.QTY <= 3 ? "Low in Stock" : "In Stock") 
+                      : "Out of Stock"}
+                  </Badge>
+                </div>
               )}
-              <Badge variant={product.QTY && product.QTY > 0 ? (product.QTY <= 3 ? "destructive" : "default") : "destructive"}>
-                {product.QTY && product.QTY > 0 
-                  ? (product.QTY <= 3 ? "Low in Stock" : "In Stock") 
-                  : "Out of Stock"}
-              </Badge>
             </div>
 
             {/* Key Details */}
