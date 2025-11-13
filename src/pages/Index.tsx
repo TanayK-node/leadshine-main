@@ -13,11 +13,9 @@ const Index = () => {
       <Header />
       <main>
         <HeroSection />
+        <FeaturedProducts />
         <CategorySection />
         <ShopByAge />
-        <FeaturedProducts />
-        <ShopByPrice />
-        <SpecialOffers />
       </main>
       <Footer />
     </div>
