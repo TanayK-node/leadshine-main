@@ -106,8 +106,8 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-sticker border-b-4 border-foreground sticky top-0 z-50">
-      {/* Top banner */}
+    <>
+      {/* Top banner - Non-sticky */}
       {banner && (
         <div className={`${banner.bg_color} ${banner.text_color} text-center py-2 px-4 border-b-2 border-foreground`}>
           <div className="flex items-center justify-center gap-4">
@@ -123,8 +123,9 @@ const Header = () => {
         </div>
       )}
 
-      {/* Main header */}
-      <div className="container mx-auto px-4 py-4">
+      {/* Main header - Sticky */}
+      <header className="bg-white shadow-sticker border-b-4 border-foreground sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between gap-4">
           {/* Logo */}
           <div className="flex items-center space-x-2 flex-shrink-0">
@@ -393,8 +394,9 @@ const Header = () => {
             </li>
           </ul>
         </nav>
-      </div>
-    </header>
+        </div>
+      </header>
+    </>
   );
 };
 
