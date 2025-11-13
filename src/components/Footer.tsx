@@ -108,6 +108,9 @@ const Footer = () => {
               © 2024 Leadshine. All rights reserved.
             </div>
             <div className="flex space-x-6 text-sm">
+              <a href="/about-us" className="text-background/60 hover:text-background transition-colors">
+                About Us
+              </a>
               <a href="/privacy-policy" className="text-background/60 hover:text-background transition-colors">
                 Privacy Policy
               </a>
